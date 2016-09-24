@@ -109,8 +109,10 @@ Id* sgetstr(void) {
 }
 
 Id* setid(Type* type, int env) {
-	if(type -> base == PTR && type -> rely -> base == FUN) {
-		lid -= type -> rely -> count + 1;
+	if(type -> base == PTR) {
+		Type *rely = type -> rely;
+		while(rely -> base == PTR) rely = rely -> rely;
+		if(rely -> base == FUN) lid -= type -> rely -> count + 1;
 	} else if(type -> base == FUN && env == ARG) {
 		lid -= type -> count + 1;
 		type = deriv_type(PTR, type, 0);
