@@ -99,110 +99,110 @@ void run_vm(int src, int debug) {
 		}
 	}
 	//run..
-	*(SP + data) = *(BP + data) = AX + 1; //sp = AX + 1;
-	*(IP + data) = 0;//int *ax = NULL; //ip = 0;
+	data[SP] = data[BP] = AX + 1; //sp = AX + 1;
+	data[IP] = 0;//int *ax = NULL; //ip = 0;
 	while(1) {
-		/*for(int i = 0; i < 10; i++) {
+		/*for(int i = 0; i < data[SP]; i++) {
 			printf("\n%d: %d", i, data[i]);
 		}*/
 		if(debug) {
-			printf("\n_%d_%d_%d_%d_\t", *(IP + data), *(BP + data), *(SP + data), *(data + AX));
-			print_emit(emit + *(IP + data));
+			printf("\n_%d_%d_%d_%d_\t", data[IP], data[BP], data[SP], data[AX]);
+			print_emit(emit + data[IP]);
 		}
-		int i = *(emit + (*(IP + data))++);
+		int i = emit[data[IP]++];
 		if(i == PUSH) {
-			int opr = *(emit + (*(IP + data))++);
-			*(data + (*(SP + data))++) = *(data + opr);//printf(" %d",*(data+*(SP+data)-1));
+			int opr = emit[data[IP]++];
+			data[data[SP]++] = data[opr];
 		} else if(i == POP) {
-			int opr = *(emit + (*(IP + data))++);
-			*(data + opr) = *(data + (--*(SP + data)));//printf(" %d",*(data+*(SP+data)));
+			int opr = emit[data[IP]++];
+			data[opr] = data[--data[SP]];
 		} else if(i == SET) {
-			int opr1 = *(emit + (*(IP + data))++);
-			int opr2 = *(emit + (*(IP + data))++);
-			*(data + opr1) = opr2;
+			int opr1 = emit[data[IP]++];
+			int opr2 = emit[data[IP]++];
+			data[opr1] = opr2;
 		} else if(i == INC) {
-			int opr1 = *(emit + (*(IP + data))++);
-			int opr2 = *(emit + (*(IP + data))++);
-			*(data + opr1) += opr2;
+			int opr1 = emit[data[IP]++];
+			int opr2 = emit[data[IP]++];
+			data[opr1] += opr2;
 		} else if(i == DEC) {
-			int opr1 = *(emit + (*(IP + data))++);
-			int opr2 = *(emit + (*(IP + data))++);
-			*(data + opr1) -= opr2;
+			int opr1 = emit[data[IP]++];
+			int opr2 = emit[data[IP]++];
+			data[opr1] -= opr2;
 		} else if(i == JMP) {
-			int opr = *(emit + (*(IP + data))++);
-			*(IP + data) = opr;
+			int opr = emit[data[IP]++];
+			data[IP] = opr;
 		} else if(i == JZ) { //jump if zero
-			int opr = *(emit + (*(IP + data))++);
-			if(!*(data + AX)) *(IP + data) = opr;
+			int opr = emit[data[IP]++];
+			if(!data[AX]) data[IP] = opr;
 		} else if(i == MOV) {
-			int opr1 = *(emit + (*(IP + data))++);
-			int opr2 = *(emit + (*(IP + data))++);
-			*(data + opr1) = *(data + opr2);
+			int opr1 = emit[data[IP]++];
+			int opr2 = emit[data[IP]++];
+			data[opr1] = *(data + opr2);
 		} else if(i == ADD) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr1 + opr2;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr1 + opr2;
 		} else if(i == SUB) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr2 - opr1;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr2 - opr1;
 		} else if(i == MUL) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr1 * opr2;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr1 * opr2;
 		} else if(i == DIV) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr2 / opr1;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr2 / opr1;
 		} else if(i == MOD) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr2 % opr1;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr2 % opr1;
 		} else if(i == ASS) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
 			*(data + opr2) = opr1;
 		} else if(i == EQ) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr2 == opr1;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr2 == opr1;
 		} else if(i == GT) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr2 > opr1;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr2 > opr1;
 		} else if(i == LT) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr2 < opr1;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr2 < opr1;
 		} else if(i == AND) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr2 && opr1;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr2 && opr1;
 		} else if(i == OR) {
-			int opr1 = *(data + AX);
-			int opr2 = *(data + (--*(SP + data)));
-			*(data + AX) = opr2 || opr1;
+			int opr1 = data[AX];
+			int opr2 = data[--data[SP]];
+			data[AX] = opr2 || opr1;
 		} else if(i == NOT) {
-			int opr = *(data + AX);
-			*(data + AX) = !opr;
+			int opr = data[AX];
+			data[AX] = !opr;
 		} else if(i == AG) { //address global
-			int opr = *(emit + (*(IP + data))++);
-			*(data + AX) = opr;
+			int opr = emit[data[IP]++];
+			data[AX] = opr;
 		} else if(i == AL) { //address local
-			int opr = *(emit + (*(IP + data))++);
-			*(data + AX) = *(BP + data) + opr;//ax = bp + ax
+			int opr = emit[data[IP]++];
+			data[AX] = data[BP] + opr;//ax = bp + ax
 		} else if(i == VAL) {
-			int opr = *(data + AX);
-			*(data + AX) = *(data + opr);
+			int opr = data[AX];
+			data[AX] = data[opr];
 		} else if(i == CALL) {
-			int opr = *(emit + (*(IP + data))++);
-			*(IP + data) = *(data + *(SP + data) - opr - 2);
+			int opr = emit[data[IP]++];
+			data[IP] = data[data[SP] - opr - 2];
 		} else if(i == CAPI) {
-			int opr = *(emit + (*(IP + data))++);
-			api_call(*(data + *(SP + data) - opr - 1));
+			int opr = emit[data[IP]++];
+			api_call(data[data[SP] - opr - 1]);
 		} else if(i == EXIT) {
 			break;
 		}//if(ax)printf(" >>%d",*ax);
 	}
-	//printf("\n%d\n",*(data + AX));
+	//printf("\n%d\n",data[AX]);
 }

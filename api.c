@@ -37,16 +37,16 @@ void api_call(int offset) {
 }
 
 int api_getint(int index) { //index == n 表示第n个参数
-	return *(data + *(SP + data) - index);
+	return data[data[SP] - index];
 }
 
 char api_getchar(int index) {
-	//printf("-- %d --\n",*(data + *(SP + data) - index));
-	return *(data + *(SP + data) - index);
+	//printf("-- %d --\n",data[data[SP] - index]);
+	return data[data[SP] - index];
 }
 
 char* api_getstr(int index) {
-	int stroff = *(data + *(SP + data) - index);
+	int stroff = data[data[SP] - index];
 	int *str = data + stroff;
 	int _si = si;
 	for(int i = 0; str[i] != '\0'; i++) {
@@ -61,13 +61,13 @@ char* api_getstr(int index) {
 }
 
 void api_setint(int i) {
-	*(data + AX) = i;
+	data[AX] = i;
 }
 
 void api_setchar(char c) {
-	*(data + AX) = c;
+	data[AX] = c;
 }
 
 void api_setstr(char *s) {
-	*(data + AX) = sgetstr(s) -> offset;
+	data[AX] = sgetstr(s) -> offset;
 }
