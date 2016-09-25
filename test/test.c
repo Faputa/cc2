@@ -14,15 +14,18 @@ void printstr(char *s) {
 }
 int scanint(void) {
 	int i;
+	fflush(stdin);
 	scanf("%d", &i);
 	return i;
 }
 char scanchar(void) {
 	char c;
-	scanf("%d", &c);
+	fflush(stdin);
+	scanf("%c", &c);
 	return c;
 }
 char* scanstr(void) {
+	fflush(stdin);
 	scanf("%s", strbuf);
 	return strbuf;
 }
