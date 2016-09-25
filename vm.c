@@ -112,8 +112,8 @@ void run_vm(int src, int debug) {
 		}
 	}
 	//run..
-	data[SP] = data[BP] = AX + 1; //sp = AX + 1;
-	data[IP] = 0;//int *ax = NULL; //ip = 0;
+	data[SP] = data[BP] = AX + 1; //sp = bp = AX + 1;
+	data[IP] = 0; //ip = 0;
 	while(1) {
 		/*for(int i = 0; i < data[SP]; i++) {
 			printf("\n%d: %d", i, data[i]);
