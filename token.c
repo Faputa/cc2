@@ -52,6 +52,17 @@ static char* tkstidy(char *tks) {
 	return tks;
 }
 
+static char* tksbychar(char c) {
+	int i = 0;
+	while(i < ti) {
+		if(tksls[i] == c) return tksls + i;
+		i++;
+	}
+	tksls[ti++] = c;
+	tksls[ti++] = '\0';
+	return tksls + i;
+}
+
 void next(void) {
 	tks = ""; tki = -1;
 	while(*p) {
@@ -92,11 +103,12 @@ void next(void) {
 				if(*p++ =='\\') p++;
 				len++;
 			}
-			if(*p) p++;//printf("%d\n",len);
+			if(*p) p++;
 			tks = tksalloc(len + 1);
-			int i = 0; while(*_p != '"') {
+			int i = 0;
+			while(*_p != '"') {
 				if(*_p == '\\') {
-					for(int j = 0; j < sizeof(trans) / sizeof(*trans); j+=2) {
+					for(int j = 0; j < sizeof(trans) / sizeof(*trans); j += 2) {
 						if(!strncmp(trans[j], _p, strlen(trans[j]))) {
 							tks[i] = *trans[j+1];
 							_p += strlen(trans[j]);
@@ -113,17 +125,18 @@ void next(void) {
 			return;
 		} else if(*p == '\'') {
 			tki = CHAR;
-			if(*++p != '\\') {
-				tks = tksalloc(2);
-				tks[0] = *p; tks[1] = '\0';
-				tks = tkstidy(tks);
-			} else {
-				for(int i = 0; i < sizeof(trans) / sizeof(*trans); i+=2) {
+			if(*++p == '\\') {
+				for(int i = 0; i < sizeof(trans) / sizeof(*trans); i += 2) {
 					if(!strncmp(trans[i], p, strlen(trans[i]))) {
-						tks = trans[i+1];
+						tks = trans[i + 1];
 						break;
 					}
 				}
+			} else {
+				/*tks = tksalloc(2);
+				tks[0] = *p; tks[1] = '\0';
+				tks = tkstidy(tks);*/
+				tks = tksbychar(*p);
 			}
 			while(*p != '\'' && *p) p++;
 			if(*p) p++;
