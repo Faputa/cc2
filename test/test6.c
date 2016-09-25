@@ -6,10 +6,10 @@ int main() {
 	int c[10] = {300, 400};
 	int d = 500;
 	char e = '6';
-	printint(a); endl();
-	printstr(b); endl();
-	printint(c[0]); endl();
-	printint(c[1]); endl();
-	printint(d); endl();
-	printchar(e); endl();
+	printint(a); printstr("\n");
+	printstr(b); printstr("\n");
+	printint(c[0]); printstr("\n");
+	printint(c[1]); printstr("\n");
+	printint(d); printstr("\n");
+	printchar(e); printstr("\n");
 }

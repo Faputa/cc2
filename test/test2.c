@@ -15,8 +15,8 @@ int div(int a, int b) {
 int main() {
 	int a = scanint();
 	int b = scanint();
-	space(); printint(add(a, b)); endl();
-	space(); printint(sub(a, b)); endl();
-	space(); printint(mul(a, b)); endl();
-	space(); printint(div(a, b)); endl();
+	printint(add(a, b)); printstr("\n");
+	printint(sub(a, b)); printstr("\n");
+	printint(mul(a, b)); printstr("\n");
+	printint(div(a, b)); printstr("\n");
 }

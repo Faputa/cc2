@@ -5,12 +5,12 @@ int f(int a, int b, int c) {
 }
 int a = 100, b = 200, c = 300;
 int main() {
-	printint(a); space(); printint(b);
-	endl();
+	printint(a); printstr(" "); printint(b);
+	printstr("\n");
 	int a;
 	{
 		int b;
 		a = 100 * b = 100 * 100;
-		printint(a); space(); printint(b);
+		printint(a); printstr(" "); printint(b);
 	}
 }

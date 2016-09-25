@@ -6,17 +6,17 @@ int f(int a[], int b) {
 int main() {
 	int a[10][10] = {{},{100,200,300}};
 	printint(a[1][2]);
-	endl();
+	printstr("\n");
 	int *b = &a[1][1];
 	printint(*b);
-	endl();
+	printstr("\n");
 	int (*c)[10] = &a[1];
 	printint((*c)[0]);
-	endl();
+	printstr("\n");
 	printint(*(*c + 0));
-	endl();
+	printstr("\n");
 	int (*d)(int a[], int b) = &f;
 	printint((*d)(a[1], 25));
-	endl();
+	printstr("\n");
 	printint(d(a[1], 25));
 }

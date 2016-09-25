@@ -63,10 +63,10 @@ int ackermann(int m, int n) { //阿克曼函数 http://t.cn/RtYNS9B
 	}
 }
 int main() {
-	printint(factoral(5)); endl();
-	printint(factoral_(5)); endl();
-	printint(fibonacci(5)); endl();
-	printint(fibonacci_(5)); endl();
-	printint(ackerman(4,2)); endl();
-	printint(ackermann(3,7)); endl();
+	printint(factoral(5)); printstr("\n");
+	printint(factoral_(5)); printstr("\n");
+	printint(fibonacci(5)); printstr("\n");
+	printint(fibonacci_(5)); printstr("\n");
+	printint(ackerman(4,2)); printstr("\n");
+	printint(ackermann(3,7)); printstr("\n");
 }

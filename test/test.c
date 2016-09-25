@@ -1,17 +1,28 @@
 #include <stdio.h>
 #include "test.h"
 
-void endl() {
-	printf("\n");
+static char strbuf[BUFSIZE];
+
+void printint(int i) {
+	printf("%d", i);
 }
-void space() {
-	printf(" ");
+void printchar(char c) {
+	printf("%c", c);
 }
-int scan() {
-	int x;
-	scanf("%d", &x);
-	return x;
+void printstr(char *s) {
+	printf("%s", s);
 }
-void print(int x) {
-	printf("%d", x);
+int scanint(void) {
+	int i;
+	scanf("%d", &i);
+	return i;
+}
+char scanchar(void) {
+	char c;
+	scanf("%d", &c);
+	return c;
+}
+char* scanstr(void) {
+	scanf("%s", strbuf);
+	return strbuf;
 }

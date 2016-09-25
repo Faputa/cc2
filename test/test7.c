@@ -2,9 +2,9 @@
 
 int main() {
 	int i = scanint();
-	printint(i); endl();//printstr("\n");
+	printint(i); printstr("\n");
 	char c = scanchar();
-	printchar(c); endl();//printstr("\n");
+	printchar(c); printstr("\n");
 	char *s = scanstr();
 	printstr(s);
 }
