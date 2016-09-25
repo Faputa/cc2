@@ -25,7 +25,7 @@ typedef struct {
 	int is_const;
 } Er;
 
-typedef void (*Api)();
+typedef void (*Api)(void);
 
 enum {
 	//keyword
@@ -49,7 +49,7 @@ void id_init(void);
 Type** getargtyls(int count);
 void print_ids(void);
 int typesize(Type *type);
-Id* sgetstr(void);
+Id* sgetstr(char *tks);
 Id* setid(Type *type, int env);
 Id* getid(char *tks);
 void inblock(void);
@@ -87,7 +87,11 @@ void run_vm(int src, int debug);
 void api_init(void);
 void api_register(Api fun, char *proto);
 void api_call(int offset);
-int api_getarg(int index);
-void api_return(int result);
+int api_getint(int index);
+char api_getchar(int index);
+char* api_getstr(int index);
+void api_setint(int i);
+void api_setchar(char c);
+void api_setstr(char *s);
 
 #endif

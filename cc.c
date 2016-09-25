@@ -5,22 +5,44 @@
 #include <malloc.h>
 #include <string.h>
 
-static void print() {
-	int i = api_getarg(1);
+static void printint(void) {
+	int i = api_getint(1);
 	printf("%d", i);
 }
 
-static void scan() {
-	int i;
-	scanf("%d", &i);
-	api_return(i);
+static void printchar(void) {
+	char c = api_getchar(1);
+	printf("%c", c);
 }
 
-static void endl() {
+static void printstr(void) {
+	char *s = api_getstr(1);
+	printf("%s", s);
+}
+
+static void scanint(void) {
+	int i;
+	scanf("%d", &i);
+	api_setint(i);
+}
+
+static void scanchar(void) {
+	char c;
+	scanf("%c", &c);
+	api_setchar(c);
+}
+
+static void scanstr(void) {
+	char s[BUFSIZE];
+	scanf("%s", s);
+	api_setstr(s);
+}
+
+static void endl(void) {
 	printf("\n");
 }
 
-static void space() {
+static void space(void) {
 	printf(" ");
 }
 
@@ -56,8 +78,12 @@ int main(int argc, char *argv[]) {
 	fclose(fp);
 	
 	//reg api
-	api_register(print, "int print(int x);");
-	api_register(scan, "int scan();");
+	api_register(printint, "int printint(int i);");
+	api_register(printchar, "int printchar(char c);");
+	api_register(printstr, "int printstr(char *s);");
+	api_register(scanint, "int scanint();");
+	api_register(scanchar, "char scanchar();");
+	api_register(scanstr, "char* scanstr();");
 	api_register(endl, "int endl();");
 	api_register(space, "int space();");
 	

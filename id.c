@@ -82,7 +82,7 @@ int typesize(Type *type) {
 	return 0;
 }
 
-Id* sgetstr(void) {
+Id* sgetstr(char *tks) {
 	for(Id *i = gid - 1; i > gids; i--) {
 		if(i -> csmk == STR && !strcmp(tks, i -> name)) return i;
 	}

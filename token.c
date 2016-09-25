@@ -102,6 +102,7 @@ void next(void) {
 			}
 			while(*p != '\'' && *p) p++;
 			if(*p) p++;
+			return;
 		} else {
 			for(int i = 0; i < sizeof(point) / sizeof(*point); i++) {
 				if(!strncmp(point[i], p, strlen(point[i]))) {

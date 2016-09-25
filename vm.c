@@ -102,6 +102,9 @@ void run_vm(int src, int debug) {
 	*(SP + data) = *(BP + data) = AX + 1; //sp = AX + 1;
 	*(IP + data) = 0;//int *ax = NULL; //ip = 0;
 	while(1) {
+		/*for(int i = 0; i < 10; i++) {
+			printf("\n%d: %d", i, data[i]);
+		}*/
 		if(debug) {
 			printf("\n_%d_%d_%d_%d_\t", *(IP + data), *(BP + data), *(SP + data), *(data + AX));
 			print_emit(emit + *(IP + data));

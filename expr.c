@@ -23,7 +23,7 @@ int const_null(void) {
 
 int const_str(void) {
 	if(tki == STR) {
-		int offset = sgetstr() -> offset;
+		int offset = sgetstr(tks) -> offset;
 		next();
 		return offset;
 	} else { printf("error26!\n"); exit(-1); }
@@ -180,7 +180,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		*e++ = SET; *e++ = AX; *e++ = 0;
 		next();
 	} else if(tki == STR) {
-		Id *this_id = sgetstr();
+		Id *this_id = sgetstr(tks);
 		*e++ = AG; *e++ = this_id -> offset;
 		er.type = this_id -> type;
 		if(strcmp(last_opr, "&")) er.type = deriv_type(PTR, er.type -> rely, 0);
@@ -190,7 +190,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		Id *this_id = getid(tks);
 		er.type = this_id -> type;
 		*e++ = this_id -> class == GLO ? AG: AL; *e++ = this_id -> offset;
-		if(er.type -> base == INT || er.type -> base == PTR) {
+		if(er.type -> base == INT || er.type -> base == CHAR || er.type -> base == PTR) {
 			*e++ = VAL;
 			er.is_const = 0;
 		}
@@ -206,7 +206,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		er.type = expr("ref").type;
 		if(er.type -> base != PTR) { printf("error39!\n"); exit(-1); }
 		er.type = er.type -> rely;
-		if(er.type -> base == INT || er.type -> base == PTR) {
+		if(er.type -> base == INT || er.type -> base == CHAR || er.type -> base == PTR) {
 			*e++ = VAL;
 			er.is_const = 0;
 		}
@@ -272,7 +272,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			*e++ = SET; *e++ = AX; *e++ = typesize(er.type);
 			*e++ = MUL;
 			*e++ = ADD;
-			if(er.type -> base == INT || er.type -> base == PTR) {
+			if(er.type -> base == INT || er.type -> base == CHAR || er.type -> base == PTR) {
 				*e++ = VAL;
 				er.is_const = 0;
 			}
