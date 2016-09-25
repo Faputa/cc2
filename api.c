@@ -41,7 +41,6 @@ int api_getint(int index) { //index == n 表示第n个参数
 }
 
 char api_getchar(int index) {
-	//printf("-- %d --\n",data[data[SP] - index]);
 	return data[data[SP] - index];
 }
 
