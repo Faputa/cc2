@@ -43,7 +43,6 @@ Type** getargtyls(int count) {
 }
 
 void print_ids(void) {
-	//printf("- %s -\n", this_id -> name);
 	printf("--- GLO ---\n");
 	for(Id *i = gids; i < gid; i++){
 		if(i -> csmk == GLO) printf("GLO");
@@ -166,7 +165,6 @@ void outblock(void) {
 	do {
 		lid--;
 	} while(lid -> csmk != LOC);
-	//id -> csmk = 0;
 }
 
 void inparam(void) {
@@ -178,23 +176,9 @@ void infunc(void) {
 	int argc = 0;
 	while(i -> csmk != FUN) {
 		(i--) -> offset -= (argc++) + 3;
-	}/*
-	Id *i;
-	int argc = 0;
-	for(i = id - 1; i -> csmk != ARG; i--) {
-		argc++;
 	}
-	for(i = id - 1; i -> csmk != ARG; i--) {
-		i -> offset -= argc + 2;
-		i -> class = FUN;
-	}
-	i -> csmk = FUN;*/
 }
 
 void outfunc(void) {
 	lid = lids;
-	/*do {
-		id--;
-	} while(id -> csmk != FUN);
-	//id -> csmk = 0;*/
 }

@@ -185,8 +185,6 @@ static int* complex(char *last_opr, int *cpx, int env) { //复杂类型分析
 }
 
 static Id* declarator(Type *type, int env) {
-	//if(strcmp(tks, "*") && strcmp(tks, "(") && tki != ID) { printf("error18!\n"); exit(-1); }
-	//Id *this_id = id++;
 	int cpxs[BUFSIZE]; //复杂类型栈
 	int *cpx = cpxs; //复杂类型栈栈顶指针
 	cpx = complex("", cpx, env);
@@ -196,21 +194,11 @@ static Id* declarator(Type *type, int env) {
 		type = deriv_type(base, type, count);
 	}
 	return setid(type, env);
-	/*
-	if(type -> base == PTR && type -> rely -> base == FUN) { //函数指针
-		id = this_id + 1;//infunc(); outfunc();
-	} else if(type -> base == FUN && this_id -> class == ARG) { //函数为形参
-		this_id -> type = deriv_type(PTR, type, 0);
-		id = this_id + 1;//infunc(); outfunc();
-	} else if(type -> base == ARR && this_id -> class == ARG) { //数组为形参
-		this_id -> type = deriv_type(PTR, type -> rely, 0);
-	}//print_type(this_id);printf("\n");
-	return this_id;*/
 }
 
 void declare(int env) {
 	static int varc;
-	if(env == GLO) {//printf("-%s-\n",tks);
+	if(env == GLO) {
 		Type *type = specifier();
 		Id *this_id = declarator(type, GLO);
 		if(this_id -> type -> base == FUN) {
@@ -233,7 +221,7 @@ void declare(int env) {
 				*e++ = POP; *e++ = IP;
 				outfunc();
 			} else if(!strcmp(tks, ";")) {
-				outfunc();//id = this_id + 1;//infunc(); outfunc();
+				outfunc();
 			} else { printf("error19!\n"); exit(-1); }
 		} else {
 			while(1) {
@@ -285,7 +273,7 @@ void declare(int env) {
 					*e++ = ASS;
 				} else if(this_id -> type -> base == PTR) {
 					*e++ = AL; *e++ = this_id -> offset;
-					*e++ = PUSH; *e++ = AX;//print_type(this_id);
+					*e++ = PUSH; *e++ = AX;
 					if(this_id -> type != expr("").type) { printf("error24!\n"); exit(-1); }
 					*e++ = ASS;
 				} else if(this_id -> type -> base == ARR) {
