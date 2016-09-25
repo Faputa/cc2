@@ -8,6 +8,9 @@
 char *p, *tks;
 int tki;
 
+static char *tksls;
+static int ti;
+
 static char *keyword[] = {
 	"int", "char", "void", "if", "else", "while", "do", "for", "return", "NULL"
 };
@@ -27,8 +30,26 @@ void token_init(void) {
 	static int is_init = 0;
 	if(!is_init) {
 		p = (char*)malloc(MAXSIZE * sizeof(char));
+		tksls = (char*)malloc(MAXSIZE * sizeof(char));
+		ti = 0;
 		is_init = 1;
 	}
+}
+
+static char* tksalloc(int size) {
+	int _ti = ti;
+	ti += size;
+	return tksls + _ti;
+}
+
+static char* tkstidy(char *tks) {
+	for(int i = 0; tksls + i < tks; i += strlen(tksls + i) + 1) {
+		if(!strcmp(tks, tksls + i)) {
+			ti -= strlen(tks) + 1;
+			return tksls + i;
+		}
+	}
+	return tks;
 }
 
 void next(void) {
@@ -48,9 +69,10 @@ void next(void) {
 				}
 			}
 			tki = ID;
-			tks = (char*)malloc(sizeof(char) * (len+1));
+			tks = tksalloc(len + 1);
 			strncpy(tks, _p, len);
 			tks[len] = '\0';
+			tks = tkstidy(tks);
 			return;
 		} else if(*p >= '0' && *p <= '9') {
 			int len = 0; char *_p = p;
@@ -58,9 +80,10 @@ void next(void) {
 				len++; p++;
 			}
 			tki = INT;
-			tks = (char*)malloc(sizeof(char) * (len+1));
+			tks = tksalloc(len + 1);
 			strncpy(tks, _p, len);
 			tks[len] = '\0';
+			tks = tkstidy(tks);
 			return;
 		} else if(*p == '"') {
 			tki = STR;
@@ -70,7 +93,7 @@ void next(void) {
 				len++;
 			}
 			if(*p) p++;//printf("%d\n",len);
-			tks = (char*)malloc(sizeof(char) * (len+1));
+			tks = tksalloc(len + 1);
 			int i = 0; while(*_p != '"') {
 				if(*_p == '\\') {
 					for(int j = 0; j < sizeof(trans) / sizeof(*trans); j+=2) {
@@ -86,12 +109,14 @@ void next(void) {
 				i++;
 			}
 			tks[i] = '\0';
+			tks = tkstidy(tks);
 			return;
 		} else if(*p == '\'') {
 			tki = CHAR;
 			if(*++p != '\\') {
-				tks = (char*)malloc(sizeof(char) * 2);
+				tks = tksalloc(2);
 				tks[0] = *p; tks[1] = '\0';
+				tks = tkstidy(tks);
 			} else {
 				for(int i = 0; i < sizeof(trans) / sizeof(*trans); i+=2) {
 					if(!strncmp(trans[i], p, strlen(trans[i]))) {

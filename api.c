@@ -6,15 +6,11 @@
 #include <string.h>
 
 static Api *api, *apis;
-static char *strbuf;
-static int si;
 
 void api_init(void) {
 	static int is_init = 0;
 	if(!is_init) {
 		apis = api = (Api*)malloc(MAXSIZE * sizeof(Api));
-		strbuf = (char*)malloc(MAXSIZE * sizeof(char));
-		si = 0;
 		is_init = 1;
 	}
 }
@@ -44,19 +40,17 @@ char api_getchar(int index) {
 	return data[data[SP] - index];
 }
 
-char* api_getstr(int index) {
+char* api_getstr(int index) { //返回一个临时的字符串，必须及时保存
 	int stroff = data[data[SP] - index];
 	int *str = data + stroff;
-	int _si = si;
-	for(int i = 0; str[i] != '\0'; i++) {
-		strbuf[si++] = str[i];
-		if(si == MAXSIZE - 1) {
-			str[si] = '\0';
-			si = 0;
-		}
+	int i = 0;
+	static char strbuf[BUFSIZE];
+	while(str[i]) {
+		strbuf[i] = str[i];
+		i++;
 	}
-	strbuf[si++] = '\0';
-	return strbuf + _si;
+	strbuf[i] = '\0';
+	return strbuf;
 }
 
 void api_setint(int i) {
