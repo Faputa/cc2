@@ -22,28 +22,23 @@ static void printstr(void) {
 
 static void scanint(void) {
 	int i;
+	fflush(stdin);
 	scanf("%d", &i);
 	api_setint(i);
 }
 
 static void scanchar(void) {
 	char c;
+	fflush(stdin);
 	scanf("%c", &c);
 	api_setchar(c);
 }
 
 static void scanstr(void) {
 	char s[BUFSIZE];
+	fflush(stdin);
 	scanf("%s", s);
 	api_setstr(s);
-}
-
-static void endl(void) {
-	printf("\n");
-}
-
-static void space(void) {
-	printf(" ");
 }
 
 int main(int argc, char *argv[]) {
@@ -84,8 +79,6 @@ int main(int argc, char *argv[]) {
 	api_register(scanint, "int scanint();");
 	api_register(scanchar, "char scanchar();");
 	api_register(scanstr, "char* scanstr();");
-	api_register(endl, "int endl();");
-	api_register(space, "int space();");
 	
 	//into code
 	*e++ = AG; int *_main = e++;
