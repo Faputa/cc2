@@ -57,15 +57,13 @@ void print_ids(void) {
 	}
 	printf("--- LOC ---\n");
 	for(Id *i = lids; i < lid; i++){
-		if(i -> csmk == ARG) printf("ARG");
-		else if(i -> csmk == FUN) printf("FUN");
+		if(i -> csmk == FUN) printf("FUN");
 		else if(i -> csmk == LOC) printf("LOC");
 		else if(i -> csmk == ID) {
 			printf("%s ", i -> name);
 			printf("%d ", i -> offset);
 			if(i -> class == ARG) printf("ARG ");
-			else if(i -> class == FUN) printf("FUN ");
-			else if(i -> class == LOC) printf("LOC ");
+			if(i -> class == LOC) printf("LOC ");
 			print_type(i);
 		}
 		printf("\n");
