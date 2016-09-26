@@ -16,8 +16,7 @@ void api_init(void) {
 }
 
 void api_register(Api fun, char *proto) {
-	char *_p = p;
-	p = proto;
+	tokensrc(proto);
 	next();
 	Id *this_id = gid;
 	declare(GLO);
@@ -25,7 +24,6 @@ void api_register(Api fun, char *proto) {
 	this_id -> type -> base = API;
 	this_id -> offset = api - apis;
 	*api++ = fun;
-	p = _p;
 }
 
 void api_call(int offset) {

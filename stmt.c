@@ -22,9 +22,9 @@ void stmt(void) {
 		next();
 		*e++ = JZ; int *_e1 = e++;
 		stmt();
-		char *_p = p;
-		next();
+		peek();
 		if(tki == Else) {
+			next();
 			*e++ = JMP; int *_e2 = e++;
 			*_e1 = e - emit;
 			next();
@@ -32,7 +32,6 @@ void stmt(void) {
 			*_e2 = e - emit;
 		} else {
 			*_e1 = e - emit;
-			p = _p;
 		}
 	} else if(tki == Do) {
 		int *_e1 = e;

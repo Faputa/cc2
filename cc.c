@@ -61,6 +61,9 @@ int main(int argc, char *argv[]) {
 	}
 	if(!fname) { printf("error5!\n"); exit(-1); }
 	if(!(fp = fopen(fname, "r"))) { printf("error6!\n"); exit(-1); }
+	char *p = (char*)malloc(MAXSIZE * sizeof(char));
+	{ int i = fread(p, sizeof(char), MAXSIZE, fp); p[i] = '\0'; }//printf("%s",p);
+	fclose(fp);
 	
 	declare_init();
 	token_init();
@@ -68,9 +71,6 @@ int main(int argc, char *argv[]) {
 	expr_init();
 	vm_init();
 	api_init();
-	
-	{ int i = fread(p, sizeof(char), MAXSIZE, fp); p[i] = '\0'; }//printf("%s",p);
-	fclose(fp);
 	
 	//reg api
 	api_register(printint, "int printint(int i);");
@@ -89,6 +89,7 @@ int main(int argc, char *argv[]) {
 	*_exit = e - emit; *e++ = EXIT;
 	
 	//parse
+	tokensrc(p);
 	next();
 	while(strcmp(tks, "") || tki != -1) {
 		declare(GLO);

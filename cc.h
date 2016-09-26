@@ -41,8 +41,8 @@ enum {
 };
 
 extern Id *gid, *lid;
-extern char *p, *tks;
-extern int *e, *emit, *data, tki;
+extern char *tks;
+extern int tki, *e, *emit, *data;
 
 //id.c
 void id_init(void);
@@ -77,7 +77,9 @@ Er expr(char *last_opr);
 
 //token.c
 void token_init(void);
+void tokensrc(char *str);
 void next(void);
+void peek(void);
 
 //vm.c
 void vm_init(void);
