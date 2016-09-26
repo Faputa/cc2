@@ -73,9 +73,9 @@ int main(int argc, char *argv[]) {
 	api_init();
 	
 	//reg api
-	api_register(printint, "int printint(int i);");
-	api_register(printchar, "int printchar(char c);");
-	api_register(printstr, "int printstr(char *s);");
+	api_register(printint, "void printint(int i);");
+	api_register(printchar, "void printchar(char c);");
+	api_register(printstr, "void printstr(char *s);");
 	api_register(scanint, "int scanint();");
 	api_register(scanchar, "char scanchar();");
 	api_register(scanstr, "char* scanstr();");

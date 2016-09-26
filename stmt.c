@@ -10,7 +10,7 @@ void stmt(void) {
 		inblock();
 		next();
 		while(strcmp(tks, "}")) {
-			if(tki == Int || tki == Char) declare(LOC);
+			if(tki == Int || tki == Char || tki == Void) declare(LOC);
 			else stmt();
 			next();
 		}
@@ -53,7 +53,7 @@ void stmt(void) {
 		next();
 		if(!strcmp(tks, "(")) next(); else { printf("error76!\n"); exit(-1); }
 		if(strcmp(tks, ";")) {
-			if(tki == Int || tki == Char) declare(LOC);
+			if(tki == Int || tki == Char || tki == Void) declare(LOC);
 			else expr("");
 			if(strcmp(tks, ";")) { printf("error77!\n"); exit(-1); }
 		}

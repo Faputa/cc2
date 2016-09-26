@@ -19,7 +19,7 @@ void declare_init(void) {
 
 Type* deriv_type(int base, Type *rely, int count) { //类型生成
 	if(rely == NULL) {
-		if(base == INT || base == CHAR || base == NUL) {
+		if(base == INT || base == CHAR || base == NUL || VOID) {
 			for(Type *i = tys; i < ty; i++) {
 				if(i -> base == base
 				&& i -> rely == NULL) return i;
@@ -38,7 +38,7 @@ Type* deriv_type(int base, Type *rely, int count) { //类型生成
 			ty -> rely = rely;
 			return ty++;
 		} else if(base == ARR) {
-			if(rely -> base == FUN) { printf("error8!\n"); exit(-1); }
+			if(rely -> base == FUN || rely -> base == VOID) { printf("error8!\n"); exit(-1); }
 			for(Type *i = tys; i < ty; i++) {
 				if(i -> base == base
 				&& i -> rely == rely
@@ -109,6 +109,9 @@ static Type* specifier(void) {
 	} else if(tki == Char) {
 		next();
 		return deriv_type(CHAR, NULL, 0);
+	} else if(tki == Void) {
+		next();
+		return deriv_type(VOID, NULL, 0);
 	} else { printf("error11!\n"); exit(-1); }
 }
 
@@ -211,7 +214,7 @@ void declare(int env) {
 				*e++ = INC; *e++ = SP; int *_e = e++;
 				next();
 				while(strcmp(tks, "}")) {
-					if(tki == Int || tki == Char) declare(LOC);
+					if(tki == Int || tki == Char || tki == Void) declare(LOC);
 					else stmt();
 					next();
 				}
