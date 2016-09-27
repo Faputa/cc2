@@ -31,7 +31,7 @@ enum {
 	//keyword
 	Int, Char, Void, If, Else, While, Do, For, Return, Null,
 	//type
-	INT, CHAR, FUN, API, PTR, ARR, NUL,
+	INT, CHAR, VOID, NUL, FUN, API, PTR, ARR,
 	//other integer
 	ID, GLO, LOC, ARG, STR,
 	//opcode
