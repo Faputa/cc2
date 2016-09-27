@@ -122,7 +122,7 @@ Id* setid(Type* type, int env) {
 	else this_id = lid++;
 	
 	for(Id *i = this_id - 1; i -> csmk == ID; i--) {
-		if(!strcmp(this_id -> name, i -> name)) { printf("error68!\n"); exit(-1); }
+		if(!strcmp(this_id -> name, i -> name)) { printf("error69!\n"); exit(-1); }
 	}
 	
 	//this_id -> name = tks;
@@ -152,7 +152,7 @@ Id* getid(char *tks) {
 	for(Id *i = gid - 1; i > gids; i--) {
 		if(i -> csmk == ID && !strcmp(tks, i -> name)) return i;
 	}
-	printf("error69!\n"); exit(-1);
+	printf("error70!\n"); exit(-1);
 }
 
 void inblock(void) {

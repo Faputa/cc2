@@ -225,7 +225,7 @@ void declare(int env) {
 				outfunc();
 			} else if(!strcmp(tks, ";")) {
 				outfunc();
-			} else { printf("error19!\n"); exit(-1); }
+			} else { printf("error18!\n"); exit(-1); }
 		} else {
 			while(1) {
 				if(!strcmp(tks, "=")) {
@@ -238,7 +238,7 @@ void declare(int env) {
 						if(tki == STR) {
 							if(this_id -> type -> rely -> base == CHAR) {
 								*(data + this_id -> offset) = const_str();
-							} else { printf("error20!\n"); exit(-1); }
+							} else { printf("error19!\n"); exit(-1); }
 						} else *(data + this_id -> offset) = const_null();
 					} else if(this_id -> type -> base == ARR) {
 						expr_arr(GLO, this_id -> type, this_id -> offset);
@@ -267,17 +267,17 @@ void declare(int env) {
 				if(this_id -> type -> base == INT) {
 					*e++ = AL; *e++ = this_id -> offset;
 					*e++ = PUSH; *e++ = AX;
-					if(this_id -> type != expr("").type) { printf("error23!\n"); exit(-1); }
+					expr_check(this_id -> type, expr("").type, "=");
 					*e++ = ASS;
 				} else if(this_id -> type -> base == CHAR) {
 					*e++ = AL; *e++ = this_id -> offset;
 					*e++ = PUSH; *e++ = AX;
-					if(this_id -> type != expr("").type) { printf("error24!\n"); exit(-1); }
+					expr_check(this_id -> type, expr("").type, "=");
 					*e++ = ASS;
 				} else if(this_id -> type -> base == PTR) {
 					*e++ = AL; *e++ = this_id -> offset;
 					*e++ = PUSH; *e++ = AX;
-					if(this_id -> type != expr("").type) { printf("error24!\n"); exit(-1); }
+					expr_check(this_id -> type, expr("").type, "=");
 					*e++ = ASS;
 				} else if(this_id -> type -> base == ARR) {
 					expr_arr(LOC, this_id -> type, this_id -> offset);
@@ -286,7 +286,7 @@ void declare(int env) {
 			varc += typesize(this_id -> type);
 			if(!strcmp(tks, ";")) break;
 			else if(!strcmp(tks, ",")) next();
-			else { printf("error25!\n"); exit(-1); }
+			else { printf("error26!\n"); exit(-1); }
 		}
 	}
 }
