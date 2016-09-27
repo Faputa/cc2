@@ -81,9 +81,9 @@ void tokensrc(char *str);
 void next(void);
 void peek(void);
 
-//gen.c
-void gen_init(void);
-void gen(char *str);
+//parsegen.c
+void parsegen_init(void);
+void parsegen(char *str);
 
 //vm.c
 void vm_init(void);

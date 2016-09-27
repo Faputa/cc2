@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 	id_init();
 	expr_init();
 	api_init();
-	gen_init();
+	parsegen_init();
 	vm_init();
 	
 	//reg api
@@ -82,7 +82,7 @@ int main(int argc, char *argv[]) {
 	api_register(scanstr, "char* scanstr();");
 	
 	//parse and gen
-	gen(p);
+	parsegen(p);
 	
 	//run
 	vm_run(src, debug);
