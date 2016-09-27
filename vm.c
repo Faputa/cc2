@@ -4,12 +4,11 @@
 #include <stdio.h>
 #include <malloc.h>
 
-int *emit, *e, *data;
+int *data;
 
 void vm_init(void) {
 	static int is_init = 0;
 	if(!is_init) {
-		emit = e = (int*)malloc(MAXSIZE * sizeof(int));
 		data = (int*)malloc(MAXSIZE * sizeof(int));
 		is_init = 1;
 	}
@@ -102,7 +101,7 @@ static int* print_emit(int *i) {
 	#undef PRINT_REG
 }
 
-void run_vm(int src, int debug) {
+void vm_run(int src, int debug) {
 	//print
 	if(src) {
 		for(int *i = emit; i < e; i++) {

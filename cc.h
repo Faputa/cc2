@@ -81,9 +81,13 @@ void tokensrc(char *str);
 void next(void);
 void peek(void);
 
+//gen.c
+void gen_init(void);
+void gen(char *str);
+
 //vm.c
 void vm_init(void);
-void run_vm(int src, int debug);
+void vm_run(int src, int debug);
 
 //api.c
 void api_init(void);

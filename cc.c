@@ -69,8 +69,9 @@ int main(int argc, char *argv[]) {
 	token_init();
 	id_init();
 	expr_init();
-	vm_init();
 	api_init();
+	gen_init();
+	vm_init();
 	
 	//reg api
 	api_register(printint, "void printint(int i);");
@@ -80,24 +81,10 @@ int main(int argc, char *argv[]) {
 	api_register(scanchar, "char scanchar();");
 	api_register(scanstr, "char* scanstr();");
 	
-	//into code
-	*e++ = AG; int *_main = e++;
-	*e++ = PUSH; *e++ = AX;
-	*e++ = SET; *e++ = AX; int *_exit = e++;
-	*e++ = PUSH; *e++ = AX;
-	*e++ = CALL; *e++ = 0;//*e++ = JMP; int *_main = e++;
-	*_exit = e - emit; *e++ = EXIT;
-	
-	//parse
-	tokensrc(p);
-	next();
-	while(strcmp(tks, "") || tki != -1) {
-		declare(GLO);
-		next();
-	}
-	*_main = getid("main") -> offset;
+	//parse and gen
+	gen(p);
 	
 	//run
-	run_vm(src, debug);
+	vm_run(src, debug);
 	return 0;
 }
