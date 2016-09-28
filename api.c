@@ -39,8 +39,7 @@ char api_getchar(int index) {
 }
 
 char* api_getstr(int index) { //返回一个临时的字符串，必须及时保存
-	int stroff = data[data[SP] - index];
-	int *str = data + stroff;
+	int *str = data + data[data[SP] - index];
 	int i = 0;
 	static char strbuf[BUFSIZE];
 	while(str[i]) {
