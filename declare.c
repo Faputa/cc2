@@ -76,7 +76,6 @@ static void _print_type(Type *type) {
 		_print_type(type -> rely);
 		printf("的元素的数组");
 	} else if(type -> base == FUN) {
-		//printf("需要%d个参数且返回值为", type -> count);
 		for(int i = 0; i < type -> count; i++) {
 			printf("第%d个参数为", i + 1);
 			_print_type(type -> argtyls[i]);
@@ -86,7 +85,12 @@ static void _print_type(Type *type) {
 		_print_type(type -> rely);
 		printf("的函数");
 	} else if(type -> base == API) {
-		printf("需要%d个参数且返回值为", type -> count);
+		for(int i = 0; i < type -> count; i++) {
+			printf("第%d个参数为", i + 1);
+			_print_type(type -> argtyls[i]);
+			printf("、");
+		}
+		printf("返回值为");
 		_print_type(type -> rely);
 		printf("的API");
 	} else if(type -> base == INT) {
