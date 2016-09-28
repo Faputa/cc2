@@ -19,7 +19,7 @@ void declare_init(void) {
 
 Type* deriv_type(int base, Type *rely, int count) { //类型生成
 	if(rely == NULL) {
-		if(base == INT || base == CHAR || base == NUL || VOID) {
+		if(base == INT || base == CHAR || base == VOID || base == NUL) {
 			for(Type *i = tys; i < ty; i++) {
 				if(i -> base == base
 				&& i -> rely == NULL) return i;
@@ -93,6 +93,8 @@ static void _print_type(Type *type) {
 		printf("整型");
 	} else if(type -> base == CHAR) {
 		printf("字符型");
+	} else if(type -> base == VOID) {
+		printf("空");
 	}
 }
 
