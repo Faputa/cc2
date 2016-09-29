@@ -39,16 +39,16 @@ void expr_arr(int env, Type *type, int offset) {
 			while(1) {
 				count++;
 				if(type -> rely -> base == INT) {
-					*(data + offset) = const_expr("");
+					data[offset] = const_expr("");
 				} else if(type -> rely -> base == CHAR) {
-					*(data + offset) = const_expr("");
+					data[offset] = const_expr("");
 				} else if(type -> rely -> base == PTR) {
 					if(tki == STR) {
 						if(type -> rely -> rely -> base == CHAR) {
-							*(data + offset) = const_str();
+							data[offset] = const_str();
 						} else { printf("error30!\n"); exit(-1); }
-					} else *(data + offset) = const_null();
-					//*(data + offset) = const_null();
+					} else data[offset] = const_null();
+					//data[offset] = const_null();
 				} else if(type -> rely -> base == ARR) {
 					expr_arr(GLO, type -> rely, offset);
 				}
