@@ -32,8 +32,8 @@ void expr_arr(int env, Type *type, int offset) {
 		memset(data + offset, 0, type -> count);
 		if(!strcmp(tks, "{")) {
 			next();
+			int count = 0;
 			if(strcmp(tks, "}")) {
-				int count = 0;
 				while(1) {
 					count++;
 					if(type -> rely -> base == INT) data[offset] = const_expr("");
@@ -49,8 +49,8 @@ void expr_arr(int env, Type *type, int offset) {
 						next();
 					} else { printf("error28!\n"); exit(-1); }
 				}
-				if(count > type -> count) { printf("error29!\n"); exit(-1); }
 			}
+			if(count > type -> count) { printf("error29!\n"); exit(-1); }
 		} else if(tki == STR) {
 			Id *strid = sgetstr(tks);
 			if(type != strid -> type) { printf("error30!\n"); exit(-1); }
@@ -62,8 +62,8 @@ void expr_arr(int env, Type *type, int offset) {
 	} else if(env == LOC) {
 		if(!strcmp(tks, "{")) {
 			next();
+			int count = 0;
 			if(strcmp(tks, "}")) {
-				int count = 0;
 				while(1) {
 					count++;
 					if(type -> rely -> base == INT || type -> rely -> base == CHAR || type -> rely -> base == PTR) {
@@ -81,8 +81,8 @@ void expr_arr(int env, Type *type, int offset) {
 						next();
 					} else { printf("error32!\n"); exit(-1); }
 				}
-				if(count > type -> count) { printf("error33!\n"); exit(-1); }
 			}
+			if(count > type -> count) { printf("error33!\n"); exit(-1); }
 		} else if(tki == STR) {
 			Id *strid = sgetstr(tks);
 			if(type != strid -> type) { printf("error34!\n"); exit(-1); }
