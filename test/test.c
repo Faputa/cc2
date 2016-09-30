@@ -1,7 +1,5 @@
-#include <stdio.h>
 #include "test.h"
-
-static char strbuf[BUFSIZE];
+#include <stdio.h>
 
 void printint(int i) {
 	printf("%d", i);
@@ -25,6 +23,7 @@ char scanchar(void) {
 	return c;
 }
 char* scanstr(void) {
+	static char strbuf[BUFSIZE];
 	fflush(stdin);
 	scanf("%s", strbuf);
 	return strbuf;
