@@ -14,20 +14,6 @@ void expr_init(void) {
 	}
 }
 
-/*int const_null(void) {
-	if(tki == Null) {
-		next();
-		return 0;
-	} else { printf("error23!\n"); exit(-1); }
-}
-
-int const_str(void) {
-	if(tki == STR) {
-		int offset = sgetstr(tks) -> offset;
-		next();
-		return offset;
-	} else { printf("error24!\n"); exit(-1); }
-}*/
 int const_ptr(Type *type) {
 	if(tki == Null) {
 		next();
