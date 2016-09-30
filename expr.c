@@ -23,8 +23,8 @@ int const_ptr(Type *type) {
 			int offset = sgetstr(tks) -> offset;
 			next();
 			return offset;
-		} else { printf("error25!\n"); exit(-1); }
-	} else { printf("error26!\n"); exit(-1); }
+		} else { printf("error23!\n"); exit(-1); }
+	} else { printf("error24!\n"); exit(-1); }
 }
 
 void expr_arr(int env, Type *type, int offset) {
@@ -40,24 +40,25 @@ void expr_arr(int env, Type *type, int offset) {
 					else if(type -> rely -> base == CHAR) data[offset] = const_expr("");
 					else if(type -> rely -> base == PTR) data[offset] = const_ptr(type -> rely);
 					else if(type -> rely -> base == ARR) expr_arr(GLO, type -> rely, offset);
-					else { printf("error27!\n"); exit(-1); }
+					else { printf("error25!\n"); exit(-1); }
 					
 					if(!strcmp(tks, "}")) {
 						break;
 					} else if(!strcmp(tks, ",")) {
 						offset += typesize(type -> rely);
 						next();
-					} else { printf("error28!\n"); exit(-1); }
+					} else { printf("error26!\n"); exit(-1); }
 				}
 			}
-			if(count > type -> count) { printf("error29!\n"); exit(-1); }
+			if(type -> count < count) { printf("error27!\n"); exit(-1); }
 		} else if(tki == STR) {
 			Id *strid = sgetstr(tks);
-			if(type != strid -> type) { printf("error30!\n"); exit(-1); }
-			for(int i = 0; i < type -> count; i++) {
+			if(type -> rely -> base != CHAR) { printf("error28!\n"); exit(-1); }
+			if(type -> count < strid -> type -> count) { printf("error29!\n"); exit(-1); }
+			for(int i = 0; i < strid -> type -> count; i++) {
 				data[offset + i] = data[strid -> offset + i];
 			}
-		} else { printf("error31!\n"); exit(-1); }
+		} else { printf("error30!\n"); exit(-1); }
 		next();
 	} else if(env == LOC) {
 		if(!strcmp(tks, "{")) {
@@ -79,14 +80,15 @@ void expr_arr(int env, Type *type, int offset) {
 					} else if(!strcmp(tks, ",")) {
 						offset += typesize(type -> rely);
 						next();
-					} else { printf("error32!\n"); exit(-1); }
+					} else { printf("error31!\n"); exit(-1); }
 				}
 			}
-			if(count > type -> count) { printf("error33!\n"); exit(-1); }
+			if(type -> count < count) { printf("error32!\n"); exit(-1); }
 		} else if(tki == STR) {
 			Id *strid = sgetstr(tks);
-			if(type != strid -> type) { printf("error34!\n"); exit(-1); }
-			for(int i = 0; i < type -> count; i++) {
+			if(type -> rely -> base != CHAR) { printf("error33!\n"); exit(-1); }
+			if(type -> count < strid -> type -> count) { printf("error34!\n"); exit(-1); }
+			for(int i = 0; i < strid -> type -> count; i++) {
 				*e++ = AL; *e++ = offset + i;
 				*e++ = PUSH; *e++ = AX;
 				*e++ = AG; *e++ = strid -> offset + i;
