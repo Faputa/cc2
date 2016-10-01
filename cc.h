@@ -72,7 +72,7 @@ void expr_init(void);
 int const_ptr(Type *type);
 int const_expr(char *last_opr);
 void expr_arr(int env, Type *type, int offset);
-void expr_check(Type *type1, Type *type2, char *opr);
+void type_check(Type *type1, Type *type2, char *opr);
 Er expr(char *last_opr);
 
 //token.c

@@ -265,7 +265,7 @@ void declare(int env) {
 				if(this_id -> type -> base == INT || this_id -> type -> base == CHAR || this_id -> type -> base == PTR) {
 					*e++ = AL; *e++ = this_id -> offset;
 					*e++ = PUSH; *e++ = AX;
-					expr_check(this_id -> type, expr("").type, "=");
+					type_check(this_id -> type, expr("").type, "=");
 					*e++ = ASS;
 				} else if(this_id -> type -> base == ARR) {
 					expr_arr(LOC, this_id -> type, this_id -> offset);

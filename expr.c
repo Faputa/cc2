@@ -70,7 +70,7 @@ void expr_arr(int env, Type *type, int offset) {
 					if(type -> rely -> base == INT || type -> rely -> base == CHAR || type -> rely -> base == PTR) {
 						*e++ = AL; *e++ = offset;
 						*e++ = PUSH; *e++ = AX;
-						expr_check(type -> rely, expr("").type, "=");
+						type_check(type -> rely, expr("").type, "=");
 						*e++ = ASS;
 					}
 					else if(type -> rely -> base == ARR) expr_arr(LOC, type -> rely, offset);
@@ -166,7 +166,7 @@ int const_expr(char *last_opr) {
 	return *sp;
 }
 
-void expr_check(Type *type1, Type *type2, char *opr) {
+void type_check(Type *type1, Type *type2, char *opr) {
 	if(!strcmp(opr, "=")) {
 		if(type1 -> base == INT || type1 -> base == CHAR) {
 			if(type2 -> base == INT);
@@ -277,7 +277,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		if(!strcmp(tks, "=")) {
 			next();
 			e -= 3; *e++ = PUSH; *e++ = AX;
-			expr_check(er.type, expr("").type, "=");
+			type_check(er.type, expr("").type, "=");
 			if(!er.is_const) *e++ = ASS; else { printf("error57!\n"); exit(-1); }
 		} else if(!strcmp(tks, "(")) {
 			next();
@@ -290,7 +290,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 					Type *argtype = expr(")").type;
 					if(argtype -> base == FUN) argtype = deriv_type(PTR, argtype, 0);
 					else if(argtype -> base == ARR) argtype = deriv_type(PTR, argtype -> rely, 0);
-					expr_check((er.type -> argtyls)[argc], argtype, "="); //参数类型检查
+					type_check((er.type -> argtyls)[argc], argtype, "="); //参数类型检查
 					*e++ = PUSH; *e++ = AX;
 					argc++;
 					if(!strcmp(tks, ")")) break;
@@ -329,7 +329,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			next();
 		} else if(!strcmp(tks, "+")) {
 			next();
-			expr_check(er.type, expr("").type, "+");
+			type_check(er.type, expr("").type, "+");
 			if(er.type -> base == INT) {
 				*e++ = ADD;
 			} else if(er.type -> base == PTR || er.type -> base == ARR) {
@@ -341,7 +341,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			} else { printf("error64!\n"); exit(-1); }
 		} else if(!strcmp(tks, "-")) {
 			next();
-			expr_check(er.type, expr("").type, "-");
+			type_check(er.type, expr("").type, "-");
 			if(er.type -> base == INT) {
 				*e++ = SUB;
 			} else if(er.type -> base == PTR || er.type -> base == ARR) {
@@ -354,7 +354,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		} else {
 			char *opr = tks;
 			next();
-			expr_check(er.type, expr(opr).type, opr);
+			type_check(er.type, expr(opr).type, opr);
 			er.type = deriv_type(INT, NULL, 0);
 			if(!strcmp(opr, "*")) *e++ = MUL;
 			else if(!strcmp(opr, "/")) *e++ = DIV;
