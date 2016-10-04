@@ -10,7 +10,7 @@ static int *sp;
 void expr_init(void) {
 	static int is_init = 0;
 	if(!is_init) {
-		sp = (int*)malloc(MAXSIZE * sizeof(int));
+		sp = (int*)malloc(BUFSIZE * sizeof(int));
 	}
 }
 
