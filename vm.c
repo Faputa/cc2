@@ -158,7 +158,7 @@ void vm_run(int src, int debug) {
 		case MOV:
 			opr1 = emit[data[IP]++];
 			opr2 = emit[data[IP]++];
-			data[opr1] = *(data + opr2);
+			data[opr1] = data[opr2];
 			break;
 		case ADD:
 			opr1 = data[AX];
@@ -188,7 +188,7 @@ void vm_run(int src, int debug) {
 		case ASS:
 			opr1 = data[AX];
 			opr2 = data[--data[SP]];
-			*(data + opr2) = opr1;
+			data[opr2] = opr1;
 			break;
 		case EQ:
 			opr1 = data[AX];
