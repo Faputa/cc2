@@ -42,7 +42,7 @@ enum {
 
 extern Id *gid, *lid;
 extern char *tks;
-extern int tki, *e, *emit, *data;
+extern int tki, line, *e, *emit, *data;
 
 //id.c
 void id_init(void);

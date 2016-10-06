@@ -27,7 +27,7 @@ Type* deriv_type(int base, Type *rely, int count) { //类型生成
 			ty -> base = base;
 			ty -> rely = NULL;
 			return ty++;
-		} else { printf("error7!\n"); exit(-1); }
+		} else { printf("line %d: error7!\n", line); exit(-1); }
 	} else {
 		if(base == PTR) {
 			for(Type *i = tys; i < ty; i++) {
@@ -38,7 +38,7 @@ Type* deriv_type(int base, Type *rely, int count) { //类型生成
 			ty -> rely = rely;
 			return ty++;
 		} else if(base == ARR) {
-			if(rely -> base == FUN || rely -> base == VOID) { printf("error8!\n"); exit(-1); }
+			if(rely -> base == FUN || rely -> base == VOID) { printf("line %d: error8!\n", line); exit(-1); }
 			for(Type *i = tys; i < ty; i++) {
 				if(i -> base == base
 				&& i -> rely == rely
@@ -49,7 +49,7 @@ Type* deriv_type(int base, Type *rely, int count) { //类型生成
 			ty -> count = count;
 			return ty++;
 		} else if(base == FUN) {// || base == API) {
-			if(rely -> base == FUN || rely -> base == ARR) { printf("error9!\n"); exit(-1); }
+			if(rely -> base == FUN || rely -> base == ARR) { printf("line %d: error9!\n", line); exit(-1); }
 			Type **argtyls = getargtyls(count);
 			for(Type *i = tys; i < ty; i++) {
 				if(i -> base == base
@@ -62,7 +62,7 @@ Type* deriv_type(int base, Type *rely, int count) { //类型生成
 			ty -> count = count;
 			ty -> argtyls = argtyls;
 			return ty++;
-		} else { printf("error10!\n"); exit(-1); }
+		} else { printf("line %d: error10!\n", line); exit(-1); }
 	}
 }
 
@@ -118,7 +118,7 @@ static Type* specifier(void) {
 	} else if(tki == Void) {
 		next();
 		return deriv_type(VOID, NULL, 0);
-	} else { printf("error11!\n"); exit(-1); }
+	} else { printf("line %d: error11!\n", line); exit(-1); }
 }
 
 static int lev(char *opr) {
@@ -149,13 +149,13 @@ static int* complex(char *last_opr, int *cpx, int env) { //复杂类型分析
 	} else if(!strcmp(tks, "(")) { //括号
 		next();
 		cpx = complex(")", cpx, env);
-		if(strcmp(tks, ")")) { printf("error12!\n"); exit(-1); } //"("无法匹配到")"
+		if(strcmp(tks, ")")) { printf("line %d: error12!\n", line); exit(-1); } //"("无法匹配到")"
 		next();
 	} else if(tki == ID) {
 		if(env == GLO) gid -> name = tks;
 		else lid -> name = tks;
 		next();
-	} else { printf("error13!\n"); exit(-1); }
+	} else { printf("line %d: error13!\n", line); exit(-1); }
 	
 	//next();
 	//后置符号
@@ -165,12 +165,12 @@ static int* complex(char *last_opr, int *cpx, int env) { //复杂类型分析
 			int count = 0;
 			if(strcmp(tks, "]")) {
 				if(tki == INT) count = atoi(tks);
-				else { printf("error14!\n"); exit(-1); }
+				else { printf("line %d: error14!\n", line); exit(-1); }
 				next();
 			}
 			*cpx++ = count;
 			*cpx++ = ARR;
-			if(strcmp(tks, "]")) { printf("error15!\n"); exit(-1); }
+			if(strcmp(tks, "]")) { printf("line %d: error15!\n", line); exit(-1); }
 		} else if(!strcmp(tks, "(")) { //函数或函数指针
 			int count = 0;
 			inparam();
@@ -182,12 +182,12 @@ static int* complex(char *last_opr, int *cpx, int env) { //复杂类型分析
 					declarator(type, ARG);
 					if(!strcmp(tks, ")")) break;
 					else if(!strcmp(tks, ",")) next();
-					else { printf("error16!\n"); exit(-1); }
+					else { printf("line %d: error16!\n", line); exit(-1); }
 				}
 			}
 			*cpx++ = count;
 			*cpx++ = FUN;
-		} else { printf("error17!\n"); exit(-1); }
+		} else { printf("line %d: error17!\n", line); exit(-1); }
 		next();
 	}
 	return cpx; //update cpx
@@ -231,7 +231,7 @@ void declare(int env) {
 				outfunc();
 			} else if(!strcmp(tks, ";")) {
 				outfunc();
-			} else { printf("error18!\n"); exit(-1); }
+			} else { printf("line %d: error18!\n", line); exit(-1); }
 		} else {
 			while(1) {
 				if(!strcmp(tks, "=")) {
@@ -240,19 +240,19 @@ void declare(int env) {
 					else if(this_id -> type -> base == CHAR) data[this_id -> offset] = const_expr("");
 					else if(this_id -> type -> base == PTR) data[this_id -> offset] = const_ptr(this_id -> type);
 					else if(this_id -> type -> base == ARR) expr_arr(GLO, this_id -> type, this_id -> offset);
-					else { printf("error19!\n"); exit(-1); }
+					else { printf("line %d: error19!\n", line); exit(-1); }
 				} else {
 					if(this_id -> type -> base == INT) data[this_id -> offset] = 0;
 					else if(this_id -> type -> base == CHAR) data[this_id -> offset] = 0;
 					else if(this_id -> type -> base == PTR) data[this_id -> offset] = 0;
 					else if(this_id -> type -> base == ARR) memset(data + this_id -> offset, 0, this_id -> type -> count);
-					else { printf("error20!\n"); exit(-1); }
+					else { printf("line %d: error20!\n", line); exit(-1); }
 				}
 				if(!strcmp(tks, ";")) break;
 				else if(!strcmp(tks, ",")) {
 					next();
 					this_id = declarator(type, GLO);
-				} else { printf("error21!\n"); exit(-1); }
+				} else { printf("line %d: error21!\n", line); exit(-1); }
 			}
 		}
 	} else if(env == LOC) {
@@ -274,7 +274,7 @@ void declare(int env) {
 			varc += typesize(this_id -> type);
 			if(!strcmp(tks, ";")) break;
 			else if(!strcmp(tks, ",")) next();
-			else { printf("error22!\n"); exit(-1); }
+			else { printf("line %d: error22!\n", line); exit(-1); }
 		}
 	}
 }

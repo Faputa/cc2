@@ -6,7 +6,7 @@
 #include <string.h>
 
 char *tks;
-int tki;
+int tki, line;
 
 static char *p, *tksls;
 static int ti;
@@ -37,6 +37,7 @@ void token_init(void) {
 
 void tokensrc(char *str) {
 	p = str;
+	line = 1;
 }
 
 static char* tksalloc(int size) {
@@ -75,9 +76,22 @@ void peek(void) {
 void next(void) {
 	tks = ""; tki = -1;
 	while(*p) {
-		if(!strncmp(p, "//", 2) || *p == '#') { while(*p != '\n') p++; p++; }
-		else if(!strncmp(p, "/*", 2)) { while(strncmp(p, "*/", 2)) p++; p+=2; }
-		else if((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z') || *p == '_') {
+		if(*p == '#' || !strncmp(p, "//", 2)) {
+			while(1) {
+				if(*p == '\0') break;
+				else if(*p == '\n') { line++; p++; break; }
+				else p++;
+			}
+		} else if(!strncmp(p, "/*", 2)) {
+			while(1) {
+				if(*p == '\0') break;
+				else if(!strncmp(p, "*/", 2)) { p+=2; break; }
+				else {
+					if(*p == '\n') line++;
+					p++;
+				}
+			}
+		} else if((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z') || *p == '_') {
 			int len = 0; char *_p = p;
 			while((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z') || (*p >= '0' && *p <= '9') || *p == '_') {
 				len++; p++;
@@ -108,11 +122,16 @@ void next(void) {
 		} else if(*p == '"') {
 			tki = STR;
 			int len = 0; char *_p = ++p;
-			while(*p != '"' && *p) {
-				if(*p++ =='\\') p++;
-				len++;
+			while(1) {
+				if(*p == '\0') { printf("line %d: error82!\n", line); exit(-1); }
+				else if(*p == '"') { p++; break; }
+				else {
+					if(*p == '\n') line++;
+					else if(*p == '\\') p++;
+					len++;
+					p++;
+				}
 			}
-			if(*p) p++;
 			tks = tksalloc(len + 1);
 			int i = 0;
 			while(*_p != '"') {
@@ -142,13 +161,19 @@ void next(void) {
 					}
 				}
 			} else {
-				/*tks = tksalloc(2);
-				tks[0] = *p; tks[1] = '\0';
-				tks = tkstidy(tks);*/
+				//tks = tksalloc(2);
+				//tks[0] = *p; tks[1] = '\0';
+				//tks = tkstidy(tks);
 				tks = tksbychar(*p);
 			}
-			while(*p != '\'' && *p) p++;
-			if(*p) p++;
+			while(1) {
+				if(*p == '\0') { printf("line %d: error83!\n", line); exit(-1); }
+				else if(*p == '\'') { p++; break; }
+				else {
+					if(*p == '\n') line++;
+					p++;
+				}
+			}
 			return;
 		} else {
 			for(int i = 0; i < sizeof(point) / sizeof(*point); i++) {
@@ -158,6 +183,7 @@ void next(void) {
 					return;
 				}
 			}
+			if(*p == '\n') line++;
 			p++;
 		}
 	}
