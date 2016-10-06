@@ -133,8 +133,7 @@ void next(void) {
 				}
 			}
 			tks = tksalloc(len + 1);
-			int i = 0;
-			while(*_p != '"') {
+			for(int i = 0; *_p != '"'; i++) {
 				if(*_p == '\\') {
 					for(int j = 0; j < sizeof(trans) / sizeof(*trans); j += 2) {
 						if(!strncmp(trans[j], _p, strlen(trans[j]))) {
@@ -143,12 +142,12 @@ void next(void) {
 							break;
 						}
 					}
+					printf("line %d: error83!\n", line); exit(-1);
 				} else {
 					tks[i] = *_p++;
 				}
-				i++;
 			}
-			tks[i] = '\0';
+			tks[len] = '\0';
 			tks = tkstidy(tks);
 			return;
 		} else if(*p == '\'') {
@@ -160,6 +159,7 @@ void next(void) {
 						break;
 					}
 				}
+				printf("line %d: error84!\n", line); exit(-1);
 			} else {
 				//tks = tksalloc(2);
 				//tks[0] = *p; tks[1] = '\0';
@@ -167,7 +167,7 @@ void next(void) {
 				tks = tksbychar(*p);
 			}
 			while(1) {
-				if(*p == '\0') { printf("line %d: error83!\n", line); exit(-1); }
+				if(*p == '\0') { printf("line %d: error85!\n", line); exit(-1); }
 				else if(*p == '\'') { p++; break; }
 				else {
 					if(*p == '\n') line++;
