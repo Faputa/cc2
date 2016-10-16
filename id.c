@@ -105,20 +105,20 @@ Id* sgetstr(char *tks) {
 	return this_id;
 }
 
-Id* setid(Type* type, int env) {
+Id* setid(Type* type, int scope) {
 	if(type -> base == PTR) {
 		Type *rely = type -> rely;
 		while(rely -> base == PTR) rely = rely -> rely;
 		if(rely -> base == FUN) lid -= type -> rely -> count + 1;
-	} else if(type -> base == FUN && env == ARG) {
+	} else if(type -> base == FUN && scope == ARG) {
 		lid -= type -> count + 1;
 		type = deriv_type(PTR, type, 0);
-	} else if(type -> base == ARR && env == ARG) {
+	} else if(type -> base == ARR && scope == ARG) {
 		type = deriv_type(PTR, type -> rely, 0);
 	}
 	
 	Id *this_id;
-	if(env == GLO) this_id = gid++;
+	if(scope == GLO) this_id = gid++;
 	else this_id = lid++;
 	
 	for(Id *i = this_id - 1; i -> csmk == ID; i--) {
@@ -128,10 +128,10 @@ Id* setid(Type* type, int env) {
 	//this_id -> name = tks;
 	this_id -> type = type;
 	this_id -> csmk = ID;
-	this_id -> class = env;
+	this_id -> class = scope;
 	
 	Id *last_id = this_id - 1;
-	if(env == GLO) {
+	if(scope == GLO) {
 		while(last_id -> csmk == ID &&
 			  (last_id -> type -> base == FUN ||
 			   last_id -> type -> base == API)) last_id--;

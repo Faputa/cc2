@@ -50,7 +50,7 @@ Type** getargtyls(int count);
 void print_ids(void);
 int typesize(Type *type);
 Id* sgetstr(char *tks);
-Id* setid(Type *type, int env);
+Id* setid(Type *type, int scope);
 Id* getid(char *tks);
 void inblock(void);
 void outblock(void);
@@ -62,7 +62,7 @@ void outfunc(void);
 void declare_init(void);
 Type* deriv_type(int base, Type *rely, int count);
 void print_type(Id *this_id);
-void declare(int env);
+void declare(int scope);
 
 //stmt.c
 void stmt(void);
@@ -71,7 +71,7 @@ void stmt(void);
 void expr_init(void);
 int const_ptr(Type *type);
 int const_expr(char *last_opr);
-void expr_arr(int env, Type *type, int offset);
+void expr_arr(int scope, Type *type, int offset);
 void type_check(Type *type1, Type *type2, char *opr);
 Er expr(char *last_opr);
 

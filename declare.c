@@ -138,21 +138,21 @@ static int lev(char *opr) {
 	return 0; //其他符号
 }
 
-static Id* declarator(Type *type, int env);
-static int* complex(char *last_opr, int *cpx, int env) { //复杂类型分析
+static Id* declarator(Type *type, int scope);
+static int* complex(char *last_opr, int *cpx, int scope) { //复杂类型分析
 	//前置符号
 	if(!strcmp(tks, "*")) { //指针
 		next();
-		cpx = complex("*", cpx, env);
+		cpx = complex("*", cpx, scope);
 		cpx++;
 		*cpx++ = PTR;
 	} else if(!strcmp(tks, "(")) { //括号
 		next();
-		cpx = complex(")", cpx, env);
+		cpx = complex(")", cpx, scope);
 		if(strcmp(tks, ")")) { printf("line %d: error12!\n", line); exit(-1); } //"("无法匹配到")"
 		next();
 	} else if(tki == ID) {
-		if(env == GLO) gid -> name = tks;
+		if(scope == GLO) gid -> name = tks;
 		else lid -> name = tks;
 		next();
 	} else { printf("line %d: error13!\n", line); exit(-1); }
@@ -193,21 +193,21 @@ static int* complex(char *last_opr, int *cpx, int env) { //复杂类型分析
 	return cpx; //update cpx
 }
 
-static Id* declarator(Type *type, int env) {
+static Id* declarator(Type *type, int scope) {
 	int cpxs[BUFSIZE]; //复杂类型栈
 	int *cpx = cpxs; //复杂类型栈栈顶指针
-	cpx = complex("", cpx, env);
+	cpx = complex("", cpx, scope);
 	while(cpx > cpxs) {
 		int base = *--cpx;
 		int count = *--cpx;
 		type = deriv_type(base, type, count);
 	}
-	return setid(type, env);
+	return setid(type, scope);
 }
 
-void declare(int env) {
+void declare(int scope) {
 	static int varc;
-	if(env == GLO) {
+	if(scope == GLO) {
 		Type *type = specifier();
 		Id *this_id = declarator(type, GLO);
 		if(this_id -> type -> base == FUN) {
@@ -255,7 +255,7 @@ void declare(int env) {
 				} else { printf("line %d: error21!\n", line); exit(-1); }
 			}
 		}
-	} else if(env == LOC) {
+	} else if(scope == LOC) {
 		Type *type = specifier();
 		while(1) {
 			//varc++;

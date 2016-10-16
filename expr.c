@@ -27,8 +27,8 @@ int const_ptr(Type *type) {
 	} else { printf("line %d: error24!\n", line); exit(-1); }
 }
 
-void expr_arr(int env, Type *type, int offset) {
-	if(env == GLO) {
+void expr_arr(int scope, Type *type, int offset) {
+	if(scope == GLO) {
 		memset(data + offset, 0, type -> count);
 		if(!strcmp(tks, "{")) {
 			next();
@@ -60,7 +60,7 @@ void expr_arr(int env, Type *type, int offset) {
 			}
 		} else { printf("line %d: error30!\n", line); exit(-1); }
 		next();
-	} else if(env == LOC) {
+	} else if(scope == LOC) {
 		if(!strcmp(tks, "{")) {
 			next();
 			int count = 0;
