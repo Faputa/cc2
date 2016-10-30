@@ -123,7 +123,7 @@ void next(void) {
 			tki = STR;
 			int len = 0; char *_p = ++p;
 			while(1) {
-				if(*p == '\0') { printf("line %d: error82!\n", line); exit(-1); }
+				if(*p == '\0') { printf("line %d: error83!\n", line); exit(-1); }
 				else if(*p == '"') { p++; break; }
 				else {
 					if(*p == '\n') line++;
@@ -167,7 +167,7 @@ void next(void) {
 				tks = tksbychar(*p);
 			}
 			while(1) {
-				if(*p == '\0') { printf("line %d: error83!\n", line); exit(-1); }
+				if(*p == '\0') { printf("line %d: error84!\n", line); exit(-1); }
 				else if(*p == '\'') { p++; break; }
 				else {
 					if(*p == '\n') line++;

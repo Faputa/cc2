@@ -68,7 +68,6 @@ void declare(int scope);
 void stmt(void);
 
 //expr.c
-void expr_init(void);
 int const_ptr(Type *type);
 int const_expr(char *last_opr);
 void expr_arr(int scope, Type *type, int offset);

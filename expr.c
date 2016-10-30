@@ -5,15 +5,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int *sp;
-
-void expr_init(void) {
-	static int is_init = 0;
-	if(!is_init) {
-		sp = (int*)malloc(BUFSIZE * sizeof(int));
-	}
-}
-
 int const_ptr(Type *type) {
 	if(tki == Null) {
 		next();
@@ -125,45 +116,45 @@ static int lev(char *opr) { //优先级越高lev越大，其他符号lev为0
 }
 
 int const_expr(char *last_opr) {
+	int a;
 	if(tki == INT) {
-		*sp = atoi(tks);
+		a = atoi(tks);
 		next();
 	} else if(tki == CHAR) {
-		*sp = tks[0];
+		a = tks[0];
 	} else if(!strcmp(tks, "(")) {
 		next();
-		const_expr(")");
+		a = const_expr(")");
 		if(strcmp(tks, ")")) { printf("line %d: error37!\n", line); exit(-1); } //"("无法匹配到")"
 		next();
 	} else if(!strcmp(tks, "!")) {
 		next();
-		const_expr("!");
-		*sp = !*sp;
+		a = !const_expr("!");
+	} else if(!strcmp(tks, "-")) {
+		next();
+		a = -const_expr("-");
 	} else { printf("line %d: error38!\n", line); exit(-1); }
 	
 	while(lev(tks) > lev(last_opr)) {
 		char *opr = tks;
-		sp++;
 		next();
-		const_expr(opr);
-		int opr2 = *sp;
-		int opr1 = *--sp;
-		if (!strcmp(opr, "+")) *sp = opr1 + opr2;
-		else if(!strcmp(opr, "-")) *sp = opr1 - opr2;
-		else if(!strcmp(opr, "*")) *sp = opr1 * opr2;
-		else if(!strcmp(opr, "/")) *sp = opr1 / opr2;
-		else if(!strcmp(opr, "%")) *sp = opr1 % opr2;
-		else if(!strcmp(opr, "==")) *sp = opr1 == opr2;
-		else if(!strcmp(opr, ">")) *sp = opr1 > opr2;
-		else if(!strcmp(opr, "<")) *sp = opr1 < opr2;
-		else if(!strcmp(opr, "!=")) *sp = opr1 == opr2;
-		else if(!strcmp(opr, ">=")) *sp = opr1 >= opr2;
-		else if(!strcmp(opr, "<=")) *sp = opr1 <= opr2;
-		else if(!strcmp(opr, "&&")) *sp = opr1 && opr2;
-		else if(!strcmp(opr, "||")) *sp = opr1 || opr2;
+		int b = const_expr(opr);
+		if (!strcmp(opr, "+")) a += b;
+		else if(!strcmp(opr, "-")) a -= b;
+		else if(!strcmp(opr, "*")) a *= b;
+		else if(!strcmp(opr, "/")) a /= b;
+		else if(!strcmp(opr, "%")) a %= b;
+		else if(!strcmp(opr, ">")) a = a > b;
+		else if(!strcmp(opr, "<")) a = a < b;
+		else if(!strcmp(opr, "==")) a = a == b;
+		else if(!strcmp(opr, ">=")) a = a >= b;
+		else if(!strcmp(opr, "<=")) a = a <= b;
+		else if(!strcmp(opr, "!=")) a = a != b;
+		else if(!strcmp(opr, "&&")) a = a && b;
+		else if(!strcmp(opr, "||")) a = a || b;
 		else { printf("line %d: error39!\n", line); exit(-1); }
 	}
-	return *sp;
+	return a;
 }
 
 void type_check(Type *type1, Type *type2, char *opr) {
@@ -270,7 +261,15 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		er.type = expr("!").type;
 		if(er.type -> base != INT) er.type = deriv_type(INT, NULL, 0);
 		*e++ = NOT;
-	} else { printf("line %d: error56!\n", line); exit(-1); }
+	} else if(!strcmp(tks, "-")) {
+		next();
+		*e++ = SET; *e++ = AX; *e++ = 0;
+		*e++ = PUSH; *e++ = AX;
+		er.type = expr("-").type;
+		if(er.type -> base == CHAR) er.type = deriv_type(INT, NULL, 0);
+		else if(er.type -> base != INT) { printf("line %d: error56!\n", line); exit(-1); }
+		*e++ = SUB;
+	} else { printf("line %d: error57!\n", line); exit(-1); }
 	
 	while(lev(tks) > lev(last_opr)) {
 		*e++ = PUSH; *e++ = AX;
@@ -278,15 +277,15 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			next();
 			e -= 3; *e++ = PUSH; *e++ = AX;
 			type_check(er.type, expr("").type, "=");
-			if(!er.is_const) *e++ = ASS; else { printf("line %d: error57!\n", line); exit(-1); }
+			if(!er.is_const) *e++ = ASS; else { printf("line %d: error58!\n", line); exit(-1); }
 		} else if(!strcmp(tks, "(")) {
 			next();
 			int argc = 0;
 			if(er.type -> base == PTR) er.type = er.type -> rely; //将函数指针转化为函数
-			if(er.type -> base != FUN && er.type -> base != API) { printf("line %d: error58!\n", line); exit(-1); }
+			if(er.type -> base != FUN && er.type -> base != API) { printf("line %d: error59!\n", line); exit(-1); }
 			if(strcmp(tks, ")")) {
 				while(1) {
-					if(argc > er.type -> count) { printf("line %d: error59!\n", line); exit(-1); } //参数过多
+					if(argc > er.type -> count) { printf("line %d: error60!\n", line); exit(-1); } //参数过多
 					Type *argtype = expr(")").type;
 					if(argtype -> base == FUN) argtype = deriv_type(PTR, argtype, 0);
 					else if(argtype -> base == ARR) argtype = deriv_type(PTR, argtype -> rely, 0);
@@ -295,11 +294,11 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 					argc++;
 					if(!strcmp(tks, ")")) break;
 					else if(!strcmp(tks, ",")) next();
-					else { printf("line %d: error60!\n", line); exit(-1); }
+					else { printf("line %d: error61!\n", line); exit(-1); }
 				}
 			}
 			next();
-			if(argc < er.type -> count) { printf("line %d: error61!\n", line); exit(-1); } //参数过少
+			if(argc < er.type -> count) { printf("line %d: error62!\n", line); exit(-1); } //参数过少
 			if(er.type -> base == FUN) {
 				*e++ = SET; *e++ = AX; int *_e = e++; //set next ip
 				*e++ = PUSH; *e++ = AX;
@@ -314,9 +313,9 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		} else if(!strcmp(tks, "[")) {
 			next();
 			if(er.type -> base == PTR || er.type -> base == ARR) er.type = er.type -> rely;
-			else { printf("line %d: error62!\n", line); exit(-1); }
+			else { printf("line %d: error63!\n", line); exit(-1); }
 			Type *type = expr("]").type;
-			if(type -> base != INT && type -> base != CHAR) { printf("line %d: error63!\n", line); exit(-1); }
+			if(type -> base != INT && type -> base != CHAR) { printf("line %d: error64!\n", line); exit(-1); }
 			*e++ = PUSH; *e++ = AX;
 			*e++ = SET; *e++ = AX; *e++ = typesize(er.type);
 			*e++ = MUL;
@@ -338,7 +337,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				*e++ = MUL;
 				*e++ = ADD;
 				if(er.type -> base == ARR) er.type = deriv_type(PTR, er.type -> rely, 0);
-			} else { printf("line %d: error64!\n", line); exit(-1); }
+			} else { printf("line %d: error65!\n", line); exit(-1); }
 		} else if(!strcmp(tks, "-")) {
 			next();
 			type_check(er.type, expr("").type, "-");
@@ -350,7 +349,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				*e++ = MUL;
 				*e++ = SUB;
 				if(er.type -> base == ARR) er.type = deriv_type(PTR, er.type -> rely, 0);
-			} else { printf("line %d: error65!\n", line); exit(-1); }
+			} else { printf("line %d: error66!\n", line); exit(-1); }
 		} else {
 			char *opr = tks;
 			next();
@@ -367,7 +366,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			else if(!strcmp(opr, "<=")) { *e++ = GT; *e++ = NOT; }
 			else if(!strcmp(opr, "&&")) *e++ = AND;
 			else if(!strcmp(opr, "||")) *e++ = OR;
-			else { printf("line %d: error66!\n", line); exit(-1); }
+			else { printf("line %d: error67!\n", line); exit(-1); }
 		}
 	}
 	return er;

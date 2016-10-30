@@ -68,7 +68,6 @@ int main(int argc, char *argv[]) {
 	declare_init();
 	token_init();
 	id_init();
-	expr_init();
 	api_init();
 	parsegen_init();
 	vm_init();
