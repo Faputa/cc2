@@ -101,7 +101,7 @@ static int lev(char *opr) { //优先级越高lev越大，其他符号lev为0
 		"", "+", "-",
 		"", "*", "/", "%",
 		"", "=",
-		"", "ref", "&",
+		"", "*_", "&_",
 		"", "(", "["
 	};
 	int lev = 1;
@@ -242,7 +242,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		next();
 	} else if(!strcmp(tks, "*")) {
 		next();
-		er.type = expr("ref").type;
+		er.type = expr("*_").type;
 		if(er.type -> base != PTR) { printf("line %d: error54!\n", line); exit(-1); }
 		er.type = er.type -> rely;
 		if(er.type -> base == INT || er.type -> base == CHAR || er.type -> base == PTR) {
@@ -252,7 +252,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		er.is_lvalue = 1;
 	} else if(!strcmp(tks, "&")) {
 		next();
-		Er _er = expr("&");
+		Er _er = expr("&_");
 		if(!_er.is_lvalue) { printf("line %d: error55!\n", line); exit(-1); }
 		if(_er.type -> base == INT || _er.type -> base == PTR) e--;
 		er.type = deriv_type(PTR, _er.type, 0);
