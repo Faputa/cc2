@@ -4,7 +4,7 @@ int f(int a[], int b) {
 	return a[0] + b;
 }
 int main() {
-	int a[10][10] = {{},{100,200,300}};
+	int a[2*5][10] = {{},{100,200,300}};
 	printint(a[1][2]);
 	printstr("\n");
 	int *b = &a[1][1];
