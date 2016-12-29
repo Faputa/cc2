@@ -129,11 +129,8 @@ static int lev(char *opr) {
 	};
 	int lev = 1;
 	for(int i = 0; i < sizeof(oprs) / sizeof(*oprs); i++) {
-		if(!strcmp(oprs[i], opr)) {
-			return lev;
-		} else if(!strcmp(oprs[i], "")) {
-			lev++;
-		}
+		if(!strcmp(oprs[i], opr)) return lev;
+		else if(!strcmp(oprs[i], "")) lev++;
 	}
 	return 0; //ÆäËû·ûºÅ
 }

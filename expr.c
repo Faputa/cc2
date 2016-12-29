@@ -106,11 +106,8 @@ static int lev(char *opr) { //优先级越高lev越大，其他符号lev为0
 	};
 	int lev = 1;
 	for(int i = 0; i < sizeof(oprs) / sizeof(*oprs); i++) {
-		if(!strcmp(oprs[i], opr)) {
-			return lev;
-		} else if(!strcmp(oprs[i], "")) {
-			lev++;
-		}
+		if(!strcmp(oprs[i], opr)) return lev;
+		else if(!strcmp(oprs[i], "")) lev++;
 	}
 	return 0; //其他符号
 }
