@@ -1,6 +1,6 @@
-//å¤æ‚å£°æ˜è§£æå™¨
-//èƒ½å¤Ÿè§£ææŒ‡é’ˆã€æ•°ç»„ã€å‡½æ•°
-//å‰ç½®ç¬¦å·é€’å½’è¯»å–ï¼Œåç½®ç¬¦å·å¾ªç¯è¯»å–
+//¸´ÔÓÉùÃ÷½âÎöÆ÷
+//ÄÜ¹»½âÎöÖ¸Õë¡¢Êı×é¡¢º¯Êı
+//Ç°ÖÃ·ûºÅµİ¹é¶ÁÈ¡£¬ºóÖÃ·ûºÅÑ­»·¶ÁÈ¡
 
 #include "cc.h"
 #include <stdio.h>
@@ -17,7 +17,7 @@ void declare_init(void) {
 	}
 }
 
-Type* deriv_type(int base, Type *rely, int count) { //ç±»å‹ç”Ÿæˆ
+Type* deriv_type(int base, Type *rely, int count) { //ÀàĞÍÉú³É
 	if(rely == NULL) {
 		if(base == INT || base == CHAR || base == VOID || base == NUL) {
 			for(Type *i = tys; i < ty; i++) {
@@ -68,43 +68,43 @@ Type* deriv_type(int base, Type *rely, int count) { //ç±»å‹ç”Ÿæˆ
 
 static void _print_type(Type *type) {
 	if(type -> base == PTR) {
-		printf("æŒ‡å‘");
+		printf("Ö¸Ïò");
 		_print_type(type -> rely);
-		printf("çš„æŒ‡é’ˆ");
+		printf("µÄÖ¸Õë");
 	} else if(type -> base == ARR) {
-		printf("æ‹¥æœ‰%dä¸ªç±»å‹ä¸º", type -> count);
+		printf("ÓµÓĞ%d¸öÀàĞÍÎª", type -> count);
 		_print_type(type -> rely);
-		printf("çš„å…ƒç´ çš„æ•°ç»„");
+		printf("µÄÔªËØµÄÊı×é");
 	} else if(type -> base == FUN) {
 		for(int i = 0; i < type -> count; i++) {
-			printf("ç¬¬%dä¸ªå‚æ•°ä¸º", i + 1);
+			printf("µÚ%d¸ö²ÎÊıÎª", i + 1);
 			_print_type(type -> argtyls[i]);
-			printf("ã€");
+			printf("¡¢");
 		}
-		printf("è¿”å›å€¼ä¸º");
+		printf("·µ»ØÖµÎª");
 		_print_type(type -> rely);
-		printf("çš„å‡½æ•°");
+		printf("µÄº¯Êı");
 	} else if(type -> base == API) {
 		for(int i = 0; i < type -> count; i++) {
-			printf("ç¬¬%dä¸ªå‚æ•°ä¸º", i + 1);
+			printf("µÚ%d¸ö²ÎÊıÎª", i + 1);
 			_print_type(type -> argtyls[i]);
-			printf("ã€");
+			printf("¡¢");
 		}
-		printf("è¿”å›å€¼ä¸º");
+		printf("·µ»ØÖµÎª");
 		_print_type(type -> rely);
-		printf("çš„API");
+		printf("µÄAPI");
 	} else if(type -> base == INT) {
-		printf("æ•´å‹");
+		printf("ÕûĞÍ");
 	} else if(type -> base == CHAR) {
-		printf("å­—ç¬¦å‹");
+		printf("×Ö·ûĞÍ");
 	} else if(type -> base == VOID) {
-		printf("ç©º");
+		printf("¿Õ");
 	}
 }
 
-void print_type(Id *this_id) {
-	printf("%sä¸º", this_id -> name);
-	_print_type(this_id -> type);
+void print_type(Id *id) {
+	printf("%sÎª", id -> name);
+	_print_type(id -> type);
 	//printf("\n");
 }
 
@@ -135,32 +135,31 @@ static int lev(char *opr) {
 			lev++;
 		}
 	}
-	return 0; //å…¶ä»–ç¬¦å·
+	return 0; //ÆäËû·ûºÅ
 }
 
 static Id* declarator(Type *type, int scope);
-static int* complex(char *last_opr, int *cpx, int scope) { //å¤æ‚ç±»å‹åˆ†æ
-	//å‰ç½®ç¬¦å·
-	if(!strcmp(tks, "*")) { //æŒ‡é’ˆ
+static int* complex(char *last_opr, int *cpx, int scope) { //¸´ÔÓÀàĞÍ·ÖÎö
+	//Ç°ÖÃ·ûºÅ
+	if(!strcmp(tks, "*")) { //Ö¸Õë
 		next();
 		cpx = complex("*", cpx, scope);
 		cpx++;
 		*cpx++ = PTR;
-	} else if(!strcmp(tks, "(")) { //æ‹¬å·
+	} else if(!strcmp(tks, "(")) { //À¨ºÅ
 		next();
 		cpx = complex(")", cpx, scope);
-		if(strcmp(tks, ")")) { printf("line %d: error12!\n", line); exit(-1); } //"("æ— æ³•åŒ¹é…åˆ°")"
+		if(strcmp(tks, ")")) { printf("line %d: error12!\n", line); exit(-1); } //"("ÎŞ·¨Æ¥Åäµ½")"
 		next();
 	} else if(tki == ID) {
-		if(scope == GLO) gid -> name = tks;
-		else lid -> name = tks;
+		setid1(tks, scope);
 		next();
 	} else { printf("line %d: error13!\n", line); exit(-1); }
 	
 	//next();
-	//åç½®ç¬¦å·
+	//ºóÖÃ·ûºÅ
 	while(lev(tks) > lev(last_opr)) {
-		if(!strcmp(tks, "[")) { //æ•°ç»„
+		if(!strcmp(tks, "[")) { //Êı×é
 			next();
 			int count = 0;
 			if(strcmp(tks, "]")) {
@@ -169,7 +168,7 @@ static int* complex(char *last_opr, int *cpx, int scope) { //å¤æ‚ç±»å‹åˆ†æ
 			*cpx++ = count;
 			*cpx++ = ARR;
 			if(strcmp(tks, "]")) { printf("line %d: error15!\n", line); exit(-1); }
-		} else if(!strcmp(tks, "(")) { //å‡½æ•°æˆ–å‡½æ•°æŒ‡é’ˆ
+		} else if(!strcmp(tks, "(")) { //º¯Êı»òº¯ÊıÖ¸Õë
 			int count = 0;
 			inparam();
 			next();
@@ -192,27 +191,27 @@ static int* complex(char *last_opr, int *cpx, int scope) { //å¤æ‚ç±»å‹åˆ†æ
 }
 
 static Id* declarator(Type *type, int scope) {
-	int cpxs[BUFSIZE]; //å¤æ‚ç±»å‹æ ˆ
-	int *cpx = cpxs; //å¤æ‚ç±»å‹æ ˆæ ˆé¡¶æŒ‡é’ˆ
+	int cpxs[BUFSIZE]; //¸´ÔÓÀàĞÍÕ»
+	int *cpx = cpxs; //¸´ÔÓÀàĞÍÕ»Õ»¶¥Ö¸Õë
 	cpx = complex("", cpx, scope);
 	while(cpx > cpxs) {
 		int base = *--cpx;
 		int count = *--cpx;
 		type = deriv_type(base, type, count);
 	}
-	return setid(type, scope);
+	return setid2(type, scope);
 }
 
 void declare(int scope) {
 	static int varc;
 	if(scope == GLO) {
 		Type *type = specifier();
-		Id *this_id = declarator(type, GLO);
-		if(this_id -> type -> base == FUN) {
+		Id *id = declarator(type, GLO);
+		if(id -> type -> base == FUN) {
 			if(!strcmp(tks, "{")) {
 				infunc();
 				varc = 0;
-				this_id -> offset = e - emit;
+				id -> offset = e - emit;
 				*e++ = PUSH; *e++ = BP;
 				*e++ = MOV; *e++ = BP; *e++ = SP; //bp = sp
 				*e++ = INC; *e++ = SP; int *_e = e++;
@@ -234,22 +233,22 @@ void declare(int scope) {
 			while(1) {
 				if(!strcmp(tks, "=")) {
 					next();
-					if(this_id -> type -> base == INT) data[this_id -> offset] = const_expr("");
-					else if(this_id -> type -> base == CHAR) data[this_id -> offset] = const_expr("");
-					else if(this_id -> type -> base == PTR) data[this_id -> offset] = const_ptr(this_id -> type);
-					else if(this_id -> type -> base == ARR) expr_arr(GLO, this_id -> type, this_id -> offset);
+					if(id -> type -> base == INT) data[id -> offset] = const_expr("");
+					else if(id -> type -> base == CHAR) data[id -> offset] = const_expr("");
+					else if(id -> type -> base == PTR) data[id -> offset] = const_ptr(id -> type);
+					else if(id -> type -> base == ARR) expr_arr(GLO, id -> type, id -> offset);
 					else { printf("line %d: error19!\n", line); exit(-1); }
 				} else {
-					if(this_id -> type -> base == INT) data[this_id -> offset] = 0;
-					else if(this_id -> type -> base == CHAR) data[this_id -> offset] = 0;
-					else if(this_id -> type -> base == PTR) data[this_id -> offset] = 0;
-					else if(this_id -> type -> base == ARR) memset(data + this_id -> offset, 0, this_id -> type -> count);
+					if(id -> type -> base == INT) data[id -> offset] = 0;
+					else if(id -> type -> base == CHAR) data[id -> offset] = 0;
+					else if(id -> type -> base == PTR) data[id -> offset] = 0;
+					else if(id -> type -> base == ARR) memset(data + id -> offset, 0, id -> type -> count);
 					else { printf("line %d: error20!\n", line); exit(-1); }
 				}
 				if(!strcmp(tks, ";")) break;
 				else if(!strcmp(tks, ",")) {
 					next();
-					this_id = declarator(type, GLO);
+					id = declarator(type, GLO);
 				} else { printf("line %d: error21!\n", line); exit(-1); }
 			}
 		}
@@ -257,19 +256,19 @@ void declare(int scope) {
 		Type *type = specifier();
 		while(1) {
 			//varc++;
-			Id *this_id = declarator(type, LOC);
+			Id *id = declarator(type, LOC);
 			if(!strcmp(tks, "=")) {
 				next();
-				if(this_id -> type -> base == INT || this_id -> type -> base == CHAR || this_id -> type -> base == PTR) {
-					*e++ = AL; *e++ = this_id -> offset;
+				if(id -> type -> base == INT || id -> type -> base == CHAR || id -> type -> base == PTR) {
+					*e++ = AL; *e++ = id -> offset;
 					*e++ = PUSH; *e++ = AX;
-					type_check(this_id -> type, expr("").type, "=");
+					type_check(id -> type, expr("").type, "=");
 					*e++ = ASS;
-				} else if(this_id -> type -> base == ARR) {
-					expr_arr(LOC, this_id -> type, this_id -> offset);
+				} else if(id -> type -> base == ARR) {
+					expr_arr(LOC, id -> type, id -> offset);
 				}
 			}
-			varc += typesize(this_id -> type);
+			varc += typesize(id -> type);
 			if(!strcmp(tks, ";")) break;
 			else if(!strcmp(tks, ",")) next();
 			else { printf("line %d: error22!\n", line); exit(-1); }

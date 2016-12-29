@@ -44,7 +44,7 @@ Type** getargtyls(int count) {
 
 void print_ids(void) {
 	printf("--- GLO ---\n");
-	for(Id *i = gids; i < gid; i++){
+	for(Id *i = gids; i < gid; i++) {
 		if(i -> csmk == GLO) printf("GLO");
 		else if(i -> csmk == STR) printf("STR : %s", i -> name);
 		else if(i -> csmk == ID) {
@@ -56,7 +56,7 @@ void print_ids(void) {
 		printf("\n");
 	}
 	printf("--- LOC ---\n");
-	for(Id *i = lids; i < lid; i++){
+	for(Id *i = lids; i < lid; i++) {
 		if(i -> csmk == FUN) printf("FUN");
 		else if(i -> csmk == LOC) printf("LOC");
 		else if(i -> csmk == ID) {
@@ -105,7 +105,12 @@ Id* sgetstr(char *tks) {
 	return this_id;
 }
 
-Id* setid(Type* type, int scope) {
+void setid1(char *tks, int scope) {
+	if(scope == GLO) gid->name = tks;
+	else lid->name = tks;
+}
+
+Id* setid2(Type* type, int scope) {
 	if(type -> base == PTR) {
 		Type *rely = type -> rely;
 		while(rely -> base == PTR) rely = rely -> rely;
