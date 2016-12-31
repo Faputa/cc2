@@ -30,12 +30,12 @@ typedef void (*Api)(void);
 enum {
 	//keyword
 	Int, Char, Void, If, Else, While, Do, For, Return, Null,
-	//type
-	INT, CHAR, VOID, NUL, FUN, API, PTR, ARR,
 	//other integer
-	ID, GLO, LOC, ARG, STR,
+	ID, STR, GLO, LOC, ARG,
+	//type
+	INT = 0, CHAR, VOID, NUL, FUN, API, PTR, ARR,
 	//opcode
-	PUSH, POP, SET, INC, DEC, JMP, JZ, MOV, ADD, SUB, MUL, DIV, MOD, EQ, GT, LT, AND, OR, NOT, AG, AL, VAL, ASS, CALL, CAPI, EXIT,
+	PUSH = 0, POP, SET, INC, DEC, JMP, JZ, MOV, ADD, SUB, MUL, DIV, MOD, EQ, GT, LT, AND, OR, NOT, AG, AL, VAL, ASS, CALL, CAPI, EXIT,
 	//reg
 	IP = 0, BP, SP, AX
 };
