@@ -7,11 +7,7 @@
 int *data;
 
 void vm_init(void) {
-	static int is_init = 0;
-	if(!is_init) {
-		data = (int*)malloc(MAXSIZE * sizeof(int));
-		is_init = 1;
-	}
+	data = (int*)malloc(MAXSIZE * sizeof(int));
 }
 
 static int* print_emit(int *i) {

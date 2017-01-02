@@ -8,11 +8,7 @@
 int *emit, *e;
 
 void parsegen_init(void) {
-	static int is_init = 0;
-	if(!is_init) {
-		emit = e = (int*)malloc(MAXSIZE * sizeof(int));
-		is_init = 1;
-	}
+	emit = e = (int*)malloc(MAXSIZE * sizeof(int));
 }
 
 void parsegen(char *str) {

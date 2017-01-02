@@ -27,12 +27,8 @@ static char *trans[] = {
 };
 
 void token_init(void) {
-	static int is_init = 0;
-	if(!is_init) {
-		tksls = (char*)malloc(MAXSIZE * sizeof(char));
-		ti = 0;
-		is_init = 1;
-	}
+	tksls = (char*)malloc(MAXSIZE * sizeof(char));
+	ti = 0;
 }
 
 void tokensrc(char *str) {

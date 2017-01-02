@@ -65,9 +65,10 @@ int main(int argc, char *argv[]) {
 	{ int i = fread(p, sizeof(char), MAXSIZE, fp); p[i] = '\0'; }//printf("%s",p);
 	fclose(fp);
 	
-	declare_init();
+	//init
+	type_init();
 	token_init();
-	id_init();
+	ident_init();
 	api_init();
 	parsegen_init();
 	vm_init();

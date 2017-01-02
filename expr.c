@@ -163,6 +163,8 @@ void type_check(Type *type1, Type *type2, char *opr) {
 		} else if(type1 -> base == PTR) {
 			if(type1 == type2);
 			else if(type2 -> base == NUL);
+			else if(type2 -> base == FUN && type2 == type1 -> rely);
+			else if(type2 -> base == ARR && type2 -> rely == type1 -> rely);
 			else if(type2 -> base == PTR && type2 -> rely -> base == VOID);
 			else { printf("line %d: error41!\n", line); exit(-1); }
 		}
@@ -219,13 +221,12 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		Id *this_id = sgetstr(tks);
 		*e++ = AG; *e++ = this_id -> offset;
 		er.type = this_id -> type;
-		if(strcmp(last_opr, "&")) er.type = deriv_type(PTR, er.type -> rely, 0);
 		er.is_lvalue = 1;
 		next();
 	} else if(tki == ID) {
 		Id *this_id = getid(tks);
 		er.type = this_id -> type;
-		*e++ = this_id -> class == GLO ? AG: AL; *e++ = this_id -> offset;
+		*e++ = this_id -> class == GLO? AG: AL; *e++ = this_id -> offset;
 		if(er.type -> base == INT || er.type -> base == CHAR || er.type -> base == PTR) {
 			*e++ = VAL;
 			er.is_const = 0;
@@ -283,10 +284,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			if(strcmp(tks, ")")) {
 				while(1) {
 					if(argc > er.type -> count) { printf("line %d: error60!\n", line); exit(-1); } //参数过多
-					Type *argtype = expr(")").type;
-					if(argtype -> base == FUN) argtype = deriv_type(PTR, argtype, 0);
-					else if(argtype -> base == ARR) argtype = deriv_type(PTR, argtype -> rely, 0);
-					type_check((er.type -> argtyls)[argc], argtype, "="); //参数类型检查
+					type_check((er.type -> argtyls)[argc], expr(")").type, "="); //参数类型检查
 					*e++ = PUSH; *e++ = AX;
 					argc++;
 					if(!strcmp(tks, ")")) break;
