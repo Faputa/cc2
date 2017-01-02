@@ -53,15 +53,15 @@ Id* sgetstr(char *tks) {
 	Id *last_id = this_id - 1;
 	
 	this_id -> name = tks;
-	this_id -> type = deriv_type(ARR, deriv_type(CHAR, NULL, 0), strlen(tks) + 1);
+	this_id -> type = type_derive(ARR, type_derive(CHAR, NULL, 0), strlen(tks) + 1);
 	this_id -> csmk = STR;
 	
 	while(last_id -> csmk == ID &&
 	      (last_id -> type -> base == FUN ||
 	       last_id -> type -> base == API)) last_id--;
 	
-	if(last_id == gids) this_id -> offset = MAXSIZE - typesize(this_id -> type);
-	else this_id -> offset = last_id -> offset - typesize(this_id -> type);
+	if(last_id == gids) this_id -> offset = MAXSIZE - type_size(this_id -> type);
+	else this_id -> offset = last_id -> offset - type_size(this_id -> type);
 	
 	for(int i = 0; i < strlen(tks) + 1; i++) {
 		(data + this_id -> offset)[i] = tks[i];
@@ -82,9 +82,9 @@ Id* setid2(Type* type, int scope) {
 		if(rely -> base == FUN) lid -= type -> rely -> count + 1;
 	} else if(type -> base == FUN && scope == ARG) {
 		lid -= type -> count + 1;
-		type = deriv_type(PTR, type, 0);
+		type = type_derive(PTR, type, 0);
 	} else if(type -> base == ARR && scope == ARG) {
-		type = deriv_type(PTR, type -> rely, 0);
+		type = type_derive(PTR, type -> rely, 0);
 	}
 	
 	Id *this_id = (scope == GLO)? gid++: lid++;
@@ -103,12 +103,12 @@ Id* setid2(Type* type, int scope) {
 		while(last_id -> csmk == ID &&
 			  (last_id -> type -> base == FUN ||
 			   last_id -> type -> base == API)) last_id--;
-		if(last_id -> csmk == GLO) this_id -> offset = MAXSIZE - typesize(type);
-		else this_id -> offset = last_id -> offset - typesize(type);
+		if(last_id -> csmk == GLO) this_id -> offset = MAXSIZE - type_size(type);
+		else this_id -> offset = last_id -> offset - type_size(type);
 	} else {
 		while(last_id -> csmk == LOC) last_id--;
 		if(last_id -> csmk == FUN || last_id -> class == ARG) this_id -> offset = 0;
-		else this_id -> offset = last_id -> offset + typesize(last_id -> type);
+		else this_id -> offset = last_id -> offset + type_size(last_id -> type);
 	}
 	return this_id;
 }

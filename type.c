@@ -32,7 +32,7 @@ static Type** getargtyls(int count) {
 	return _argtyls;
 }
 
-Type* deriv_type(int base, Type *rely, int count) { //类型生成
+Type* type_derive(int base, Type *rely, int count) { //类型生成
 	if(rely == NULL) {
 		if(base == INT || base == CHAR || base == VOID || base == NUL) {
 			for(Type *i = tys; i < ty; i++) {
@@ -123,10 +123,59 @@ void print_type(Id *id) {
 	//printf("\n");
 }
 
-int typesize(Type *type) {
+int type_size(Type *type) {
 	if(type -> base == INT) return 1;
 	else if(type -> base == CHAR) return 1;
 	else if(type -> base == PTR) return 1;
-	else if(type -> base == ARR) return typesize(type -> rely) * type -> count;
+	else if(type -> base == ARR) return type_size(type -> rely) * type -> count;
 	return 0;
+}
+
+void type_check(Type *type1, Type *type2, char *opr) {
+	if(!strcmp(opr, "=")) {
+		if(type1 -> base == INT || type1 -> base == CHAR) {
+			if(type2 -> base == INT);
+			else if(type2 -> base == CHAR);
+			else { printf("line %d: error40!\n", line); exit(-1); }
+		} else if(type1 -> base == PTR) {
+			if(type1 == type2);
+			else if(type2 -> base == NUL);
+			else if(type2 -> base == FUN && type2 == type1 -> rely);
+			else if(type2 -> base == ARR && type2 -> rely == type1 -> rely);
+			else if(type2 -> base == PTR && type2 -> rely -> base == VOID);
+			else { printf("line %d: error41!\n", line); exit(-1); }
+		}
+	} else if(!strcmp(opr, "+") || !strcmp(opr, "-")) {
+		if(type1 -> base == INT || type1 -> base == CHAR || type1 -> base == PTR || type1 -> base == ARR) {
+			if(type2 -> base == INT);
+			else if(type2 -> base == CHAR);
+			else { printf("line %d: error42!\n", line); exit(-1); }
+		} else { printf("line %d: error43!\n", line); exit(-1); }
+	} else if(!strcmp(opr, "*") || !strcmp(opr, "/") || !strcmp(opr, "%")) {
+		if(type1 -> base == INT || type1 -> base == CHAR) {
+			if(type2 -> base == INT);
+			else if(type2 -> base == CHAR);
+			else { printf("line %d: error44!\n", line); exit(-1); }
+		} else { printf("line %d: error45!\n", line); exit(-1); }
+	} else if(!strcmp(opr, "==") || !strcmp(opr, ">") || !strcmp(opr, "<") || !strcmp(opr, "!=") || !strcmp(opr, ">=") || !strcmp(opr, "<=")) {
+		if(type1 -> base == INT || type1 -> base == CHAR) {
+			if(type2 -> base == INT);
+			else if(type2 -> base == CHAR);
+			else { printf("line %d: error46!\n", line); exit(-1); }
+		} else if(type1 -> base == PTR) {
+			if(type1 == type2);
+			else if(type2 -> base == NUL);
+			else { printf("line %d: error47!\n", line); exit(-1); }
+		} else if(type1 -> base == NUL) {
+			if(type1 == type2);
+			else if(type2 -> base == PTR);
+			else { printf("line %d: error48!\n", line); exit(-1); }
+		} else { printf("line %d: error49!\n", line); exit(-1); }
+	} else if(!strcmp(opr, "&&") || !strcmp(opr, "||")) {
+		if(type1 -> base == INT || type1 -> base == CHAR) {
+			if(type2 -> base == INT);
+			else if(type2 -> base == CHAR);
+			else { printf("line %d: error50!\n", line); exit(-1); }
+		} else { printf("line %d: error51!\n", line); exit(-1); }
+	} else { printf("line %d: error52!\n", line); exit(-1); }
 }

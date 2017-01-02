@@ -10,13 +10,13 @@
 static Type* specifier(void) {
 	if(tki == Int) {
 		next();
-		return deriv_type(INT, NULL, 0);
+		return type_derive(INT, NULL, 0);
 	} else if(tki == Char) {
 		next();
-		return deriv_type(CHAR, NULL, 0);
+		return type_derive(CHAR, NULL, 0);
 	} else if(tki == Void) {
 		next();
-		return deriv_type(VOID, NULL, 0);
+		return type_derive(VOID, NULL, 0);
 	} else { printf("line %d: error11!\n", line); exit(-1); }
 }
 
@@ -93,7 +93,7 @@ static Id* declarator(Type *type, int scope) {
 	while(cpx > cpxs) {
 		int base = *--cpx;
 		int count = *--cpx;
-		type = deriv_type(base, type, count);
+		type = type_derive(base, type, count);
 	}
 	return setid2(type, scope);
 }
@@ -164,7 +164,7 @@ void declare(int scope) {
 					expr_arr(LOC, id -> type, id -> offset);
 				}
 			}
-			varc += typesize(id -> type);
+			varc += type_size(id -> type);
 			if(!strcmp(tks, ";")) break;
 			else if(!strcmp(tks, ",")) next();
 			else { printf("line %d: error22!\n", line); exit(-1); }

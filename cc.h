@@ -59,8 +59,9 @@ void outfunc(void);
 
 //type.c
 void type_init(void);
-int typesize(Type *type);
-Type* deriv_type(int base, Type *rely, int count);
+int type_size(Type *type);
+void type_check(Type *type1, Type *type2, char *opr);
+Type* type_derive(int base, Type *rely, int count);
 void print_type(Id *this_id);
 
 //declare.c
@@ -73,7 +74,6 @@ void stmt(void);
 int const_ptr(Type *type);
 int const_expr(char *last_opr);
 void expr_arr(int scope, Type *type, int offset);
-void type_check(Type *type1, Type *type2, char *opr);
 Er expr(char *last_opr);
 
 //token.c
