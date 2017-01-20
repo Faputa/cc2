@@ -122,8 +122,7 @@ int const_expr(char *last_opr) {
 	} else if(!strcmp(tks, "(")) {
 		next();
 		a = const_expr(")");
-		if(strcmp(tks, ")")) { printf("line %d: error37!\n", line); exit(-1); } //"("Œﬁ∑®∆•≈‰µΩ")"
-		next();
+		if(!strcmp(tks, ")")) next(); else { printf("line %d: error37!\n", line); exit(-1); }
 	} else if(!strcmp(tks, "!")) {
 		next();
 		a = !const_expr("!");
@@ -187,8 +186,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 	} else if(!strcmp(tks, "(")) {
 		next();
 		er.type = expr(")").type;
-		if(strcmp(tks, ")")) { printf("line %d: error53!\n", line); exit(-1); }
-		next();
+		if(!strcmp(tks, ")")) next(); else { printf("line %d: error53!\n", line); exit(-1); }
 	} else if(!strcmp(tks, "*")) {
 		next();
 		er.type = expr("*_").type;
