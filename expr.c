@@ -270,30 +270,19 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			}
 			er.is_lvalue = 1;
 			next();
-		} else if(!strcmp(tks, "+")) {
+		} else if(!strcmp(tks, "+") || !strcmp(tks, "-")) {
+			char *opr = tks;
 			next();
-			type_check(er.type, expr("").type, "+");
+			type_check(er.type, expr("").type, opr);
 			if(er.type -> base == INT) {
-				*e++ = ADD;
+				*e++ = !strcmp(opr, "+")? ADD: SUB;
 			} else if(er.type -> base == PTR || er.type -> base == ARR) {
 				*e++ = PUSH; *e++ = AX;
 				*e++ = SET; *e++ = AX; *e++ = type_size(er.type -> rely);
 				*e++ = MUL;
-				*e++ = ADD;
+				*e++ = !strcmp(opr, "+")? ADD: SUB;
 				if(er.type -> base == ARR) er.type = type_derive(PTR, er.type -> rely, 0);
 			} else { printf("line %d: error65!\n", line); exit(-1); }
-		} else if(!strcmp(tks, "-")) {
-			next();
-			type_check(er.type, expr("").type, "-");
-			if(er.type -> base == INT) {
-				*e++ = SUB;
-			} else if(er.type -> base == PTR || er.type -> base == ARR) {
-				*e++ = PUSH; *e++ = AX;
-				*e++ = SET; *e++ = AX; *e++ = type_size(er.type -> rely);
-				*e++ = MUL;
-				*e++ = SUB;
-				if(er.type -> base == ARR) er.type = type_derive(PTR, er.type -> rely, 0);
-			} else { printf("line %d: error66!\n", line); exit(-1); }
 		} else {
 			char *opr = tks;
 			next();
