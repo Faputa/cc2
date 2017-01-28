@@ -16,7 +16,7 @@ C语言解释器
 	cc test/test6.c
 	cc test/test7.c
 
-### 对照
+## 对照
 	cd test && gcc test1.c test.c -o test1 && test1
 	cd test && gcc test2.c test.c -o test2 && test2
 	cd test && gcc test3.c test.c -o test3 && test3
