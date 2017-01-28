@@ -70,12 +70,7 @@ Id* sgetstr(char *tks) {
 	return this_id;
 }
 
-void setid1(char *tks, int scope) {
-	if(scope == GLO) gid->name = tks;
-	else lid->name = tks;
-}
-
-Id* setid2(Type* type, int scope) {
+Id* setid(Type* type, int scope) {
 	if(type -> base == PTR) {
 		Type *rely = type -> rely;
 		while(rely -> base == PTR) rely = rely -> rely;

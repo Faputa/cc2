@@ -48,7 +48,8 @@ static int* complex(char *last_opr, int *cpx, int scope) { //复杂类型分析
 		if(strcmp(tks, ")")) { printf("line %d: error12!\n", line); exit(-1); } //"("无法匹配到")"
 		next();
 	} else if(tki == ID) {
-		setid1(tks, scope);
+		if(scope == GLO) gid->name = tks;
+		else lid->name = tks;
 		next();
 	} else { printf("line %d: error13!\n", line); exit(-1); }
 	
@@ -95,7 +96,7 @@ static Id* declarator(Type *type, int scope) {
 		int count = *--cpx;
 		type = type_derive(base, type, count);
 	}
-	return setid2(type, scope);
+	return setid(type, scope);
 }
 
 void declare(int scope) {
