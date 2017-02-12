@@ -74,7 +74,7 @@ Id* setid(Type* type, int scope) {
 	if(type -> base == PTR) {
 		Type *rely = type -> rely;
 		while(rely -> base == PTR) rely = rely -> rely;
-		if(rely -> base == FUN) lid -= type -> rely -> count + 1;
+		if(rely -> base == FUN) lid -= rely -> count + 1;
 	} else if(type -> base == FUN && scope == ARG) {
 		lid -= type -> count + 1;
 		type = type_derive(PTR, type, 0);
