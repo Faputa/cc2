@@ -16,9 +16,9 @@ void api_register(Api fun, char *proto) {
 	next();
 	Id *this_id = gid;
 	declare(GLO);
-	if(this_id -> type -> base != FUN) { printf("line %d: error1!\n", line); exit(-1); }
-	this_id -> type -> base = API;
-	this_id -> offset = api - apis;
+	if(this_id->type->base != FUN) error("line %d: error!\n", line);
+	this_id->type->base = API;
+	this_id->offset = api - apis;
 	*api++ = fun;
 }
 
@@ -55,5 +55,5 @@ void api_setchar(char c) {
 }
 
 void api_setstr(char *s) {
-	data[AX] = sgetstr(s) -> offset;
+	data[AX] = sgetstr(s)->offset;
 }

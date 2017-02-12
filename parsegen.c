@@ -27,5 +27,5 @@ void parsegen(char *str) {
 		declare(GLO);
 		next();
 	}
-	*_main = getid("main") -> offset;
+	*_main = getid("main")->offset;
 }

@@ -45,7 +45,7 @@ int main(int argc, char *argv[]) {
 	int src = 0, debug = 0;
 	char *fname = NULL;
 	FILE *fp;
-	if(argc < 2) { printf("line %d: error2!\n", line); exit(-1); }
+	if(argc < 2) error("line %d: error!\n", line);
 	for(int i = 1; i < argc; i++) {
 		if(!strcmp(argv[i], "-s")) {
 			src = 1;
@@ -55,12 +55,12 @@ int main(int argc, char *argv[]) {
 			char *j;
 			if((j = strrchr(argv[i], '.'))) {
 				if(!strcmp(j, ".c")) fname = argv[i];
-				else { printf("line %d: error3!\n", line); exit(-1); }
-			} else { printf("line %d: error4!\n", line); exit(-1); }
+				else error("line %d: error!\n", line);
+			} else error("line %d: error!\n", line);
 		}
 	}
-	if(!fname) { printf("line %d: error5!\n", line); exit(-1); }
-	if(!(fp = fopen(fname, "r"))) { printf("line %d: error6!\n", line); exit(-1); }
+	if(!fname) error("line %d: error!\n", line);
+	if(!(fp = fopen(fname, "r"))) error("line %d: error!\n", line);
 	char *p = (char*)malloc(MAXSIZE * sizeof(char));
 	{ int i = fread(p, sizeof(char), MAXSIZE, fp); p[i] = '\0'; }//printf("%s",p);
 	fclose(fp);

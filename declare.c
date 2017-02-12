@@ -10,14 +10,15 @@
 static Type* specifier(void) {
 	if(tki == Int) {
 		next();
-		return type_derive(INT, NULL, 0);
+		return typeint;
 	} else if(tki == Char) {
 		next();
-		return type_derive(CHAR, NULL, 0);
+		return typechar;
 	} else if(tki == Void) {
 		next();
 		return type_derive(VOID, NULL, 0);
-	} else { printf("line %d: error11!\n", line); exit(-1); }
+	} else error("line %d: error!\n", line);
+	return NULL; //make compiler happy
 }
 
 static int lev(char *opr) {
@@ -35,25 +36,23 @@ static int lev(char *opr) {
 }
 
 static Id* declarator(Type *type, int scope);
-static int* complex(char *last_opr, int *cpx, int scope) { //复杂类型分析
+static int* complex(char *last_opr, int *cpx, Id *id) { //复杂类型分析
 	//前置符号
 	if(!strcmp(tks, "*")) { //指针
 		next();
-		cpx = complex("*", cpx, scope);
+		cpx = complex("*", cpx, id);
 		cpx++;
 		*cpx++ = PTR;
 	} else if(!strcmp(tks, "(")) { //括号
 		next();
-		cpx = complex(")", cpx, scope);
-		if(strcmp(tks, ")")) { printf("line %d: error12!\n", line); exit(-1); } //"("无法匹配到")"
+		cpx = complex(")", cpx, id);
+		if(strcmp(tks, ")")) error("line %d: error!\n", line);
 		next();
 	} else if(tki == ID) {
-		if(scope == GLO) gid->name = tks;
-		else lid->name = tks;
+		id->name = tks;
 		next();
-	} else { printf("line %d: error13!\n", line); exit(-1); }
+	} else error("line %d: error!\n", line);
 	
-	//next();
 	//后置符号
 	while(lev(tks) > lev(last_opr)) {
 		if(!strcmp(tks, "[")) { //数组
@@ -64,7 +63,7 @@ static int* complex(char *last_opr, int *cpx, int scope) { //复杂类型分析
 			}
 			*cpx++ = count;
 			*cpx++ = ARR;
-			if(strcmp(tks, "]")) { printf("line %d: error15!\n", line); exit(-1); }
+			if(strcmp(tks, "]")) error("line %d: error!\n", line);
 		} else if(!strcmp(tks, "(")) { //函数或函数指针
 			int count = 0;
 			inparam();
@@ -76,27 +75,35 @@ static int* complex(char *last_opr, int *cpx, int scope) { //复杂类型分析
 					declarator(type, ARG);
 					if(!strcmp(tks, ")")) break;
 					else if(!strcmp(tks, ",")) next();
-					else { printf("line %d: error16!\n", line); exit(-1); }
+					else error("line %d: error!\n", line);
 				}
 			}
 			*cpx++ = count;
 			*cpx++ = FUN;
-		} else { printf("line %d: error17!\n", line); exit(-1); }
+		} else error("line %d: error!\n", line);
 		next();
 	}
 	return cpx; //update cpx
 }
 
 static Id* declarator(Type *type, int scope) {
+	Id *id = (scope == GLO)? gid: lid;
+	id->class = scope;
 	int cpxs[BUFSIZE]; //复杂类型栈
 	int *cpx = cpxs; //复杂类型栈栈顶指针
-	cpx = complex("", cpx, scope);
+	cpx = complex("", cpx, id);
 	while(cpx > cpxs) {
 		int base = *--cpx;
 		int count = *--cpx;
 		type = type_derive(base, type, count);
 	}
-	return setid(type, scope);
+	if(type->base == FUN && scope == ARG) {
+		type = type_derive(PTR, type, 0);
+	} else if(type->base == ARR && scope == ARG) {
+		type = type_derive(PTR, type->rely, 0);
+	}
+	setid(type, id);
+	return id;
 }
 
 void declare(int scope) {
@@ -104,11 +111,11 @@ void declare(int scope) {
 	if(scope == GLO) {
 		Type *type = specifier();
 		Id *id = declarator(type, GLO);
-		if(id -> type -> base == FUN) {
+		if(id->type->base == FUN) {
 			if(!strcmp(tks, "{")) {
 				infunc();
 				varc = 0;
-				id -> offset = e - emit;
+				id->offset = e - emit;
 				*e++ = PUSH; *e++ = BP;
 				*e++ = MOV; *e++ = BP; *e++ = SP; //bp = sp
 				*e++ = INC; *e++ = SP; int *_e = e++;
@@ -125,28 +132,28 @@ void declare(int scope) {
 				outfunc();
 			} else if(!strcmp(tks, ";")) {
 				outfunc();
-			} else { printf("line %d: error18!\n", line); exit(-1); }
+			} else error("line %d: error!\n", line);
 		} else {
 			while(1) {
 				if(!strcmp(tks, "=")) {
 					next();
-					if(id -> type -> base == INT) data[id -> offset] = const_expr("");
-					else if(id -> type -> base == CHAR) data[id -> offset] = const_expr("");
-					else if(id -> type -> base == PTR) data[id -> offset] = const_ptr(id -> type);
-					else if(id -> type -> base == ARR) expr_arr(GLO, id -> type, id -> offset);
-					else { printf("line %d: error19!\n", line); exit(-1); }
+					if(id->type->base == INT) data[id->offset] = const_expr("");
+					else if(id->type->base == CHAR) data[id->offset] = const_expr("");
+					else if(id->type->base == PTR) data[id->offset] = const_ptr(id->type);
+					else if(id->type->base == ARR) expr_arr(GLO, id->type, id->offset);
+					else error("line %d: error!\n", line);
 				} else {
-					if(id -> type -> base == INT) data[id -> offset] = 0;
-					else if(id -> type -> base == CHAR) data[id -> offset] = 0;
-					else if(id -> type -> base == PTR) data[id -> offset] = 0;
-					else if(id -> type -> base == ARR) memset(data + id -> offset, 0, id -> type -> count);
-					else { printf("line %d: error20!\n", line); exit(-1); }
+					if(id->type->base == INT) data[id->offset] = 0;
+					else if(id->type->base == CHAR) data[id->offset] = 0;
+					else if(id->type->base == PTR) data[id->offset] = 0;
+					else if(id->type->base == ARR) memset(data + id->offset, 0, id->type->count);
+					else error("line %d: error!\n", line);
 				}
 				if(!strcmp(tks, ";")) break;
 				else if(!strcmp(tks, ",")) {
 					next();
 					id = declarator(type, GLO);
-				} else { printf("line %d: error21!\n", line); exit(-1); }
+				} else error("line %d: error!\n", line);
 			}
 		}
 	} else if(scope == LOC) {
@@ -156,19 +163,19 @@ void declare(int scope) {
 			Id *id = declarator(type, LOC);
 			if(!strcmp(tks, "=")) {
 				next();
-				if(id -> type -> base == INT || id -> type -> base == CHAR || id -> type -> base == PTR) {
-					*e++ = AL; *e++ = id -> offset;
+				if(id->type->base == INT || id->type->base == CHAR || id->type->base == PTR) {
+					*e++ = AL; *e++ = id->offset;
 					*e++ = PUSH; *e++ = AX;
-					type_check(id -> type, expr("").type, "=");
+					type_check(id->type, expr("").type, "=");
 					*e++ = ASS;
-				} else if(id -> type -> base == ARR) {
-					expr_arr(LOC, id -> type, id -> offset);
+				} else if(id->type->base == ARR) {
+					expr_arr(LOC, id->type, id->offset);
 				}
 			}
-			varc += type_size(id -> type);
+			varc += type_size(id->type);
 			if(!strcmp(tks, ";")) break;
 			else if(!strcmp(tks, ",")) next();
-			else { printf("line %d: error22!\n", line); exit(-1); }
+			else error("line %d: error!\n", line);
 		}
 	}
 }

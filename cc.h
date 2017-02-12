@@ -43,12 +43,13 @@ enum {
 extern Id *gid, *lid;
 extern char *tks;
 extern int tki, line, *e, *emit, *data;
+extern Type *typeint, *typechar, *typenull;
 
 //ident.c
 void ident_init(void);
 void print_ids(void);
 Id* sgetstr(char *tks);
-Id* setid(Type *type, int scope);
+void setid(Type *type, Id *id);
 Id* getid(char *tks);
 void inblock(void);
 void outblock(void);
@@ -65,6 +66,10 @@ void print_type(Id *this_id);
 
 //declare.c
 void declare(int scope);
+
+//error.c
+void error(char *fmt, ...);
+void warning(char *fmt, ...);
 
 //stmt.c
 void stmt(void);
