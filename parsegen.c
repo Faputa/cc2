@@ -24,7 +24,7 @@ void parsegen(char *str) {
 	tokensrc(str);
 	next();
 	while(strcmp(tks, "") || tki != -1) {
-		declare(GLO);
+		declare_glo();
 		next();
 	}
 	*_main = getid("main")->offset;

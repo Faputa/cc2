@@ -15,7 +15,7 @@ void api_register(Api fun, char *proto) {
 	tokensrc(proto);
 	next();
 	Id *this_id = gid;
-	declare(GLO);
+	declare_glo();
 	if(this_id->type->base != FUN) error("line %d: error!\n", line);
 	this_id->type->base = API;
 	this_id->offset = api - apis;

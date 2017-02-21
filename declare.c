@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+static int varc;
+
 static Type* specifier(void) {
 	if(tki == Int) {
 		next();
@@ -106,76 +108,75 @@ static Id* declarator(Type *type, int scope) {
 	return id;
 }
 
-void declare(int scope) {
-	static int varc;
-	if(scope == GLO) {
-		Type *type = specifier();
-		Id *id = declarator(type, GLO);
-		if(id->type->base == FUN) {
-			if(!strcmp(tks, "{")) {
-				infunc();
-				varc = 0;
-				id->offset = e - emit;
-				*e++ = PUSH; *e++ = BP;
-				*e++ = MOV; *e++ = BP; *e++ = SP; //bp = sp
-				*e++ = INC; *e++ = SP; int *_e = e++;
-				next();
-				while(strcmp(tks, "}")) {
-					if(tki == Int || tki == Char || tki == Void) declare(LOC);
-					else stmt();
-					next();
-				}
-				*_e = varc;
-				*e++ = MOV; *e++ = SP; *e++ = BP; //sp = bp
-				*e++ = POP; *e++ = BP;
-				*e++ = POP; *e++ = IP;
-				outfunc();
-			} else if(!strcmp(tks, ";")) {
-				outfunc();
-			} else error("line %d: error!\n", line);
-		} else {
-			while(1) {
-				if(!strcmp(tks, "=")) {
-					next();
-					if(id->type->base == INT) data[id->offset] = const_expr("");
-					else if(id->type->base == CHAR) data[id->offset] = const_expr("");
-					else if(id->type->base == PTR) data[id->offset] = const_ptr(id->type);
-					else if(id->type->base == ARR) expr_arr(GLO, id->type, id->offset);
-					else error("line %d: error!\n", line);
-				} else {
-					if(id->type->base == INT) data[id->offset] = 0;
-					else if(id->type->base == CHAR) data[id->offset] = 0;
-					else if(id->type->base == PTR) data[id->offset] = 0;
-					else if(id->type->base == ARR) memset(data + id->offset, 0, id->type->count);
-					else error("line %d: error!\n", line);
-				}
-				if(!strcmp(tks, ";")) break;
-				else if(!strcmp(tks, ",")) {
-					next();
-					id = declarator(type, GLO);
-				} else error("line %d: error!\n", line);
+void declare_loc(void) {
+	Type *type = specifier();
+	while(1) {
+		//varc++;
+		Id *id = declarator(type, LOC);
+		if(!strcmp(tks, "=")) {
+			next();
+			if(id->type->base == INT || id->type->base == CHAR || id->type->base == PTR) {
+				*e++ = AL; *e++ = id->offset;
+				*e++ = PUSH; *e++ = AX;
+				type_check(id->type, expr("").type, "=");
+				*e++ = ASS;
+			} else if(id->type->base == ARR) {
+				expr_arr(LOC, id->type, id->offset);
 			}
 		}
-	} else if(scope == LOC) {
-		Type *type = specifier();
+		varc += type_size(id->type);
+		if(!strcmp(tks, ";")) break;
+		else if(!strcmp(tks, ",")) next();
+		else error("line %d: error!\n", line);
+	}
+}
+
+void declare_glo(void) {
+	Type *type = specifier();
+	Id *id = declarator(type, GLO);
+	if(id->type->base == FUN) {
+		if(!strcmp(tks, "{")) {
+			infunc();
+			varc = 0;
+			id->offset = e - emit;
+			*e++ = PUSH; *e++ = BP;
+			*e++ = MOV; *e++ = BP; *e++ = SP; //bp = sp
+			*e++ = INC; *e++ = SP; int *_e = e++;
+			next();
+			while(strcmp(tks, "}")) {
+				if(tki == Int || tki == Char || tki == Void) declare_loc();
+				else stmt();
+				next();
+			}
+			*_e = varc;
+			*e++ = MOV; *e++ = SP; *e++ = BP; //sp = bp
+			*e++ = POP; *e++ = BP;
+			*e++ = POP; *e++ = IP;
+			outfunc();
+		} else if(!strcmp(tks, ";")) {
+			outfunc();
+		} else error("line %d: error!\n", line);
+	} else {
 		while(1) {
-			//varc++;
-			Id *id = declarator(type, LOC);
 			if(!strcmp(tks, "=")) {
 				next();
-				if(id->type->base == INT || id->type->base == CHAR || id->type->base == PTR) {
-					*e++ = AL; *e++ = id->offset;
-					*e++ = PUSH; *e++ = AX;
-					type_check(id->type, expr("").type, "=");
-					*e++ = ASS;
-				} else if(id->type->base == ARR) {
-					expr_arr(LOC, id->type, id->offset);
-				}
+				if(id->type->base == INT) data[id->offset] = const_expr("");
+				else if(id->type->base == CHAR) data[id->offset] = const_expr("");
+				else if(id->type->base == PTR) data[id->offset] = const_ptr(id->type);
+				else if(id->type->base == ARR) expr_arr(GLO, id->type, id->offset);
+				else error("line %d: error!\n", line);
+			} else {
+				if(id->type->base == INT) data[id->offset] = 0;
+				else if(id->type->base == CHAR) data[id->offset] = 0;
+				else if(id->type->base == PTR) data[id->offset] = 0;
+				else if(id->type->base == ARR) memset(data + id->offset, 0, id->type->count);
+				else error("line %d: error!\n", line);
 			}
-			varc += type_size(id->type);
 			if(!strcmp(tks, ";")) break;
-			else if(!strcmp(tks, ",")) next();
-			else error("line %d: error!\n", line);
+			else if(!strcmp(tks, ",")) {
+				next();
+				id = declarator(type, GLO);
+			} else error("line %d: error!\n", line);
 		}
 	}
 }

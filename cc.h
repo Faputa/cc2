@@ -65,7 +65,8 @@ Type* type_derive(int base, Type *rely, int count);
 void print_type(Id *this_id);
 
 //declare.c
-void declare(int scope);
+void declare_loc(void);
+void declare_glo(void);
 
 //error.c
 void error(char *fmt, ...);
