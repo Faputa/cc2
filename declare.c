@@ -61,7 +61,7 @@ static int* complex(char *last_opr, int *cpx, Id *id) { //¸´ÔÓÀàÐÍ·ÖÎö
 			next();
 			int count = 0;
 			if(strcmp(tks, "]")) {
-				count = const_expr("");
+				count = expr_const("");
 			}
 			*cpx++ = count;
 			*cpx++ = ARR;
@@ -121,7 +121,7 @@ void declare_loc(void) {
 				type_check(id->type, expr("").type, "=");
 				*e++ = ASS;
 			} else if(id->type->base == ARR) {
-				expr_arr(LOC, id->type, id->offset);
+				arr_init_loc(id->type, id->offset);
 			}
 		}
 		varc += type_size(id->type);
@@ -160,10 +160,10 @@ void declare_glo(void) {
 		while(1) {
 			if(!strcmp(tks, "=")) {
 				next();
-				if(id->type->base == INT) data[id->offset] = const_expr("");
-				else if(id->type->base == CHAR) data[id->offset] = const_expr("");
-				else if(id->type->base == PTR) data[id->offset] = const_ptr(id->type);
-				else if(id->type->base == ARR) expr_arr(GLO, id->type, id->offset);
+				if(id->type->base == INT) data[id->offset] = expr_const("");
+				else if(id->type->base == CHAR) data[id->offset] = expr_const("");
+				else if(id->type->base == PTR) data[id->offset] = ptr_const(id->type);
+				else if(id->type->base == ARR) arr_init_glo(id->type, id->offset);
 				else error("line %d: error!\n", line);
 			} else {
 				if(id->type->base == INT) data[id->offset] = 0;

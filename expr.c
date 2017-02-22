@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-int const_ptr(Type *type) {
+int ptr_const(Type *type) {
 	if(tki == Null) {
 		next();
 		return 0;
@@ -19,78 +19,78 @@ int const_ptr(Type *type) {
 	return 0; //make compiler happy
 }
 
-void expr_arr(int scope, Type *type, int offset) {
-	if(scope == GLO) {
-		memset(data + offset, 0, type->count);
-		if(!strcmp(tks, "{")) {
-			next();
-			int count = 0;
-			if(strcmp(tks, "}")) {
-				while(1) {
-					count++;
-					if(type->rely->base == INT) data[offset] = const_expr("");
-					else if(type->rely->base == CHAR) data[offset] = const_expr("");
-					else if(type->rely->base == PTR) data[offset] = const_ptr(type->rely);
-					else if(type->rely->base == ARR) expr_arr(GLO, type->rely, offset);
-					else error("line %d: error!\n", line);
-					
-					if(!strcmp(tks, "}")) {
-						break;
-					} else if(!strcmp(tks, ",")) {
-						offset += type_size(type->rely);
-						next();
-					} else error("line %d: error!\n", line);
-				}
-			}
-			if(type->count < count) error("line %d: error!\n", line);
-		} else if(tki == STR) {
-			Id *strid = sgetstr(tks);
-			if(type->rely->base != CHAR) error("line %d: error!\n", line);
-			if(type->count < strid->type->count) error("line %d: error!\n", line);
-			for(int i = 0; i < strid->type->count; i++) {
-				data[offset + i] = data[strid->offset + i];
-			}
-		} else error("line %d: error!\n", line);
+void arr_init_glo(Type *type, int offset) {
+	memset(data + offset, 0, type->count);
+	if(!strcmp(tks, "{")) {
 		next();
-	} else if(scope == LOC) {
-		if(!strcmp(tks, "{")) {
-			next();
-			int count = 0;
-			if(strcmp(tks, "}")) {
-				while(1) {
-					count++;
-					if(type->rely->base == INT || type->rely->base == CHAR || type->rely->base == PTR) {
-						*e++ = AL; *e++ = offset;
-						*e++ = PUSH; *e++ = AX;
-						type_check(type->rely, expr("").type, "=");
-						*e++ = ASS;
-					}
-					else if(type->rely->base == ARR) expr_arr(LOC, type->rely, offset);
-					else error("line %d: error!\n", line);
-					
-					if(!strcmp(tks, "}")) {
-						break;
-					} else if(!strcmp(tks, ",")) {
-						offset += type_size(type->rely);
-						next();
-					} else error("line %d: error!\n", line);
-				}
+		int count = 0;
+		if(strcmp(tks, "}")) {
+			while(1) {
+				count++;
+				if(type->rely->base == INT) data[offset] = expr_const("");
+				else if(type->rely->base == CHAR) data[offset] = expr_const("");
+				else if(type->rely->base == PTR) data[offset] = ptr_const(type->rely);
+				else if(type->rely->base == ARR) arr_init_glo(type->rely, offset);
+				else error("line %d: error!\n", line);
+				
+				if(!strcmp(tks, "}")) {
+					break;
+				} else if(!strcmp(tks, ",")) {
+					offset += type_size(type->rely);
+					next();
+				} else error("line %d: error!\n", line);
 			}
-			if(type->count < count) error("line %d: error!\n", line);
-		} else if(tki == STR) {
-			Id *strid = sgetstr(tks);
-			if(type->rely->base != CHAR) error("line %d: error!\n", line);
-			if(type->count < strid->type->count) error("line %d: error!\n", line);
-			for(int i = 0; i < strid->type->count; i++) {
-				*e++ = AL; *e++ = offset + i;
-				*e++ = PUSH; *e++ = AX;
-				*e++ = AG; *e++ = strid->offset + i;
-				*e++ = VAL;
-				*e++ = ASS;
-			}
-		} else error("line %d: error!\n", line);
+		}
+		if(type->count < count) error("line %d: error!\n", line);
+	} else if(tki == STR) {
+		Id *strid = sgetstr(tks);
+		if(type->rely->base != CHAR) error("line %d: error!\n", line);
+		if(type->count < strid->type->count) error("line %d: error!\n", line);
+		for(int i = 0; i < strid->type->count; i++) {
+			data[offset + i] = data[strid->offset + i];
+		}
+	} else error("line %d: error!\n", line);
+	next();
+}
+
+void arr_init_loc(Type *type, int offset) {
+	if(!strcmp(tks, "{")) {
 		next();
-	}
+		int count = 0;
+		if(strcmp(tks, "}")) {
+			while(1) {
+				count++;
+				if(type->rely->base == INT || type->rely->base == CHAR || type->rely->base == PTR) {
+					*e++ = AL; *e++ = offset;
+					*e++ = PUSH; *e++ = AX;
+					type_check(type->rely, expr("").type, "=");
+					*e++ = ASS;
+				}
+				else if(type->rely->base == ARR) arr_init_loc(type->rely, offset);
+				else error("line %d: error!\n", line);
+				
+				if(!strcmp(tks, "}")) {
+					break;
+				} else if(!strcmp(tks, ",")) {
+					offset += type_size(type->rely);
+					next();
+				} else error("line %d: error!\n", line);
+			}
+		}
+		if(type->count < count) error("line %d: error!\n", line);
+	} else if(tki == STR) {
+		Id *strid = sgetstr(tks);
+		if(type->rely->base != CHAR) error("line %d: error!\n", line);
+		if(type->count < strid->type->count) error("line %d: error!\n", line);
+		for(int i = 0; i < strid->type->count; i++) {
+			*e++ = AL; *e++ = offset + i;
+			*e++ = PUSH; *e++ = AX;
+			*e++ = AG; *e++ = strid->offset + i;
+			*e++ = VAL;
+			*e++ = ASS;
+		}
+	} else error("line %d: error!\n", line);
+	next();
 }
 
 static int lev(char *opr) { //优先级越高lev越大，其他符号lev为0
@@ -113,7 +113,7 @@ static int lev(char *opr) { //优先级越高lev越大，其他符号lev为0
 	return 0; //其他符号
 }
 
-int const_expr(char *last_opr) {
+int expr_const(char *last_opr) {
 	int a;
 	if(tki == INT) {
 		a = atoi(tks);
@@ -122,20 +122,20 @@ int const_expr(char *last_opr) {
 		a = tks[0];
 	} else if(!strcmp(tks, "(")) {
 		next();
-		a = const_expr(")");
+		a = expr_const(")");
 		if(!strcmp(tks, ")")) next(); else error("line %d: error!\n", line);
 	} else if(!strcmp(tks, "!")) {
 		next();
-		a = !const_expr("!");
+		a = !expr_const("!");
 	} else if(!strcmp(tks, "-")) {
 		next();
-		a = -const_expr("-");
+		a = -expr_const("-");
 	} else error("line %d: error!\n", line);
 	
 	while(lev(tks) > lev(last_opr)) {
 		char *opr = tks;
 		next();
-		int b = const_expr(opr);
+		int b = expr_const(opr);
 		if (!strcmp(opr, "+")) a += b;
 		else if(!strcmp(opr, "-")) a -= b;
 		else if(!strcmp(opr, "*")) a *= b;

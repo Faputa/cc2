@@ -76,9 +76,10 @@ void warning(char *fmt, ...);
 void stmt(void);
 
 //expr.c
-int const_ptr(Type *type);
-int const_expr(char *last_opr);
-void expr_arr(int scope, Type *type, int offset);
+int ptr_const(Type *type);
+void arr_init_glo(Type *type, int offset);
+void arr_init_loc(Type *type, int offset);
+int expr_const(char *last_opr);
 Er expr(char *last_opr);
 
 //token.c
