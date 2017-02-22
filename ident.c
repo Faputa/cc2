@@ -1,4 +1,4 @@
-﻿//符号表、参数类型表
+﻿//符号表
 
 #include "cc.h"
 #include <stdio.h>

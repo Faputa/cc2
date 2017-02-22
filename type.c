@@ -1,3 +1,5 @@
+//类型表、参数类型表
+
 #include "cc.h"
 #include <stdio.h>
 #include <malloc.h>
