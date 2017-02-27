@@ -156,6 +156,7 @@ int expr_const(char *last_opr) {
 
 Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 	Er er = {NULL, 0, 1};
+	int *_e1 = e;
 	if(tki == INT) {
 		er.type = typeint;
 		*e++ = SET; *e++ = AX; *e++ = atoi(tks);
@@ -220,6 +221,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 	} else error("line %d: error!\n", line);
 	
 	while(lev(tks) > lev(last_opr)) {
+		int *_e2 = e;
 		*e++ = PUSH; *e++ = AX;
 		if(!strcmp(tks, "=")) {
 			next();
@@ -274,7 +276,17 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		} else if(!strcmp(tks, "+") || !strcmp(tks, "-")) {
 			char *opr = tks;
 			next();
-			type_check(er.type, expr("").type, opr);
+			int *_e3 = e;
+			Type *type = expr("").type;
+			int *_e4 = e;
+			type_check(er.type, type, opr);
+			if(type->base == PTR || type->base == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
+				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
+				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
+				memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
+				memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
+				er.type = type;
+			}
 			if(er.type->base == INT) {
 				*e++ = !strcmp(opr, "+")? ADD: SUB;
 			} else if(er.type->base == PTR || er.type->base == ARR) {
