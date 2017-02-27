@@ -257,15 +257,13 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				*e++ = DEC; *e++ = SP; *e++ = argc + 1;
 			}
 			er.type = er.type->rely;
-		} else if(!strcmp(tks, "[")) {
+/*		} else if(!strcmp(tks, "[")) {
 			next();
-			//if(er.type->base == PTR || er.type->base == ARR) er.type = er.type->rely;
-			//else error("line %d: error!\n", line);
 			int *_e3 = e;
 			Type *type = expr("]").type;
-			int *_e4 = e;
-			//if(type->base != INT && type->base != CHAR) error("line %d: error!\n", line);
+			if(!strcmp(tks, "]")) next(); else error("line %d: error!\n", line);
 			type_check(er.type, type, "+");
+			int *_e4 = e;
 			if(type->base == PTR || type->base == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
 				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
 				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
@@ -273,24 +271,23 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
 				er.type = type;
 			}
-			er.type = er.type->rely;
 			*e++ = PUSH; *e++ = AX;
-			*e++ = SET; *e++ = AX; *e++ = type_size(er.type);
+			*e++ = SET; *e++ = AX; *e++ = type_size(er.type-rely);
 			*e++ = MUL;
 			*e++ = ADD;
+			er.type = er.type->rely;
 			if(er.type->base == INT || er.type->base == CHAR || er.type->base == PTR) {
 				*e++ = VAL;
 				er.is_const = 0;
 			}
 			er.is_lvalue = 1;
-			next();
 		} else if(!strcmp(tks, "+") || !strcmp(tks, "-")) {
 			char *opr = tks;
 			next();
 			int *_e3 = e;
-			Type *type = expr("").type;
-			int *_e4 = e;
+			Type *type = expr(opr).type;
 			type_check(er.type, type, opr);
+			int *_e4 = e;
 			if(type->base == PTR || type->base == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
 				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
 				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
@@ -306,6 +303,43 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				*e++ = MUL;
 				*e++ = !strcmp(opr, "+")? ADD: SUB;
 				if(er.type->base == ARR) er.type = type_derive(PTR, er.type->rely, 0);
+			} else error("line %d: error!\n", line);*/
+		} else if(!strcmp(tks, "+") || !strcmp(tks, "-") || !strcmp(tks, "[")) {
+			char *opr = tks;
+			next();
+			int *_e3 = e;
+			Type *type;
+			if(!strcmp(opr, "[")) {
+				type = expr("]").type;
+				if(!strcmp(tks, "]")) next(); else error("line %d: error!\n", line);
+				type_check(er.type, type, "+");
+			} else {
+				type = expr(opr).type;
+				type_check(er.type, type, opr);
+			}
+			int *_e4 = e;
+			if(type->base == PTR || type->base == ARR) {
+				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
+				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
+				memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
+				memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
+				er.type = type;
+			}
+			if(er.type->base == INT) {
+				*e++ = !strcmp(opr, "-")? SUB: ADD;
+			} else if(er.type->base == PTR || er.type->base == ARR) {
+				*e++ = PUSH; *e++ = AX;
+				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->rely);
+				*e++ = MUL;
+				*e++ = !strcmp(opr, "-")? SUB: ADD;
+				if(!strcmp(opr, "[")) {
+					er.type = er.type->rely;
+					if(er.type->base == INT || er.type->base == CHAR || er.type->base == PTR) {
+						*e++ = VAL;
+						er.is_const = 0;
+					}
+					er.is_lvalue = 1;
+				} else if(er.type->base == ARR) er.type = type_derive(PTR, er.type->rely, 0);
 			} else error("line %d: error!\n", line);
 		} else {
 			char *opr = tks;
