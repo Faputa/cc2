@@ -259,10 +259,21 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			er.type = er.type->rely;
 		} else if(!strcmp(tks, "[")) {
 			next();
-			if(er.type->base == PTR || er.type->base == ARR) er.type = er.type->rely;
-			else error("line %d: error!\n", line);
+			//if(er.type->base == PTR || er.type->base == ARR) er.type = er.type->rely;
+			//else error("line %d: error!\n", line);
+			int *_e3 = e;
 			Type *type = expr("]").type;
-			if(type->base != INT && type->base != CHAR) error("line %d: error!\n", line);
+			int *_e4 = e;
+			//if(type->base != INT && type->base != CHAR) error("line %d: error!\n", line);
+			type_check(er.type, type, "+");
+			if(type->base == PTR || type->base == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
+				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
+				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
+				memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
+				memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
+				er.type = type;
+			}
+			er.type = er.type->rely;
 			*e++ = PUSH; *e++ = AX;
 			*e++ = SET; *e++ = AX; *e++ = type_size(er.type);
 			*e++ = MUL;
