@@ -153,15 +153,17 @@ void type_check(Type *type1, Type *type2, char *opr) {
 			else if(type2->base == PTR && type2->rely->base == VOID);
 			else error("line %d: error!\n", line);
 		}
-	} else if(!strcmp(opr, "+") || !strcmp(opr, "-")) {
+	} else if(!strcmp(opr, "+") || !strcmp(opr, "-") || !strcmp(opr, "[")) {
 		if(type2->base == PTR || type2->base == ARR) {
 			Type *tmp = type1; type1 = type2; type2 = tmp;
 		}
-		if(type1->base == INT || type1->base == CHAR || type1->base == PTR || type1->base == ARR) {
-			if(type2->base == INT);
-			else if(type2->base == CHAR);
-			else error("line %d: error!\n", line);
-		} else error("line %d: error!\n", line);
+		if(type1->base == INT || type1->base == CHAR) {
+			if(!strcmp(opr, "[")) error("line %d: error!\n", line);
+		}
+		else if(type1->base == PTR || type1->base == ARR);
+		else error("line %d: error!\n", line);
+		if(type2->base == INT || type2->base == CHAR);
+		else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "*") || !strcmp(opr, "/") || !strcmp(opr, "%")) {
 		if(type1->base == INT || type1->base == CHAR) {
 			if(type2->base == INT);

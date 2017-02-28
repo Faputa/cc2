@@ -262,7 +262,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			int *_e3 = e;
 			Type *type = expr("]").type;
 			if(!strcmp(tks, "]")) next(); else error("line %d: error!\n", line);
-			type_check(er.type, type, "+");
+			type_check(er.type, type, "[");
 			int *_e4 = e;
 			if(type->base == PTR || type->base == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
 				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
@@ -312,11 +312,10 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			if(!strcmp(opr, "[")) {
 				type = expr("]").type;
 				if(!strcmp(tks, "]")) next(); else error("line %d: error!\n", line);
-				type_check(er.type, type, "+");
 			} else {
 				type = expr(opr).type;
-				type_check(er.type, type, opr);
 			}
+			type_check(er.type, type, opr);
 			int *_e4 = e;
 			if(type->base == PTR || type->base == ARR) {
 				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
@@ -326,7 +325,9 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				er.type = type;
 			}
 			if(er.type->base == INT) {
-				*e++ = !strcmp(opr, "-")? SUB: ADD;
+				if(!strcmp(opr, "+")) *e++ = ADD;
+				else if(!strcmp(opr, "-")) *e++ = SUB;
+				else error("line %d: error!\n", line);
 			} else if(er.type->base == PTR || er.type->base == ARR) {
 				*e++ = PUSH; *e++ = AX;
 				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->rely);
