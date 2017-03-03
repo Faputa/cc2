@@ -68,7 +68,7 @@ static int* complex(char *last_opr, int *cpx, Id *id) { //复杂类型分析
 			if(strcmp(tks, "]")) error("line %d: error!\n", line);
 		} else if(!strcmp(tks, "(")) { //函数或函数指针
 			int count = 0;
-			inparam();
+			infunc();
 			next();
 			if(strcmp(tks, ")")) {
 				while(1) {
@@ -136,7 +136,6 @@ void declare_glo(void) {
 	Id *id = declarator(type, GLO);
 	if(id->type->base == FUN) {
 		if(!strcmp(tks, "{")) {
-			infunc();
 			varc = 0;
 			id->offset = e - emit;
 			*e++ = PUSH; *e++ = BP;

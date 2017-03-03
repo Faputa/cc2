@@ -234,10 +234,18 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			if(er.type->base != FUN && er.type->base != API) error("line %d: error!\n", line);
 			int argc = 0;
 			if(strcmp(tks, ")")) {
+				int *_e1 = e;
 				while(1) {
-					if(argc > er.type->count) error("line %d: error!\n", line); //参数过多
-					type_check((er.type->argtyls)[argc], expr(")").type, "="); //参数类型检查
+					int *_e2 = e;
+					Type *type = expr(")").type;
+					if(argc < er.type->count) type_check((er.type->argtyls)[argc], type, "="); //参数类型检查
 					*e++ = PUSH; *e++ = AX;
+					int *_e3 = e;
+					if(_e2 > _e1) {
+						memcpy(_e3, _e1, (_e2 - _e1) * sizeof(int));
+						memmove(_e1, _e2, (_e3 - _e2) * sizeof(int));
+						memcpy(_e1 + (_e3 - _e2), _e3, (_e2 - _e1) *sizeof(int));
+					}
 					argc++;
 					if(!strcmp(tks, ")")) break;
 					else if(!strcmp(tks, ",")) next();
@@ -245,7 +253,6 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				}
 			}
 			next();
-			if(argc < er.type->count) error("line %d: error!\n", line); //参数过少
 			*e++ = (er.type->base == FUN)? CALL: CAPI; *e++ = argc;
 			*e++ = DEC; *e++ = SP; *e++ = argc + 1;
 			er.type = er.type->rely;

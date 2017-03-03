@@ -53,7 +53,6 @@ void setid(Type *type, Id *id);
 Id* getid(char *tks);
 void inblock(void);
 void outblock(void);
-void inparam(void);
 void infunc(void);
 void outfunc(void);
 

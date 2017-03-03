@@ -10,9 +10,11 @@ int f(int a, int b, int c, int d, int e, int f) {
 	int g[100] = {0, 700};
 	int h = 800;
 	printint(g[1]); printstr("\n");
-	printint(h);
+	printint(h); printstr("\n");
 }
 
 int main() {
-	f(100, 200, 300, 400, 500, 600);
+	f(100, 200, 300, 400); printstr("----\n");
+	f(100, 200, 300, 400, 500, 600); printstr("----\n");
+	f(100, 200, 300, 400, 500, 600, 10, 20);
 }

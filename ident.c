@@ -81,12 +81,16 @@ void setid(Type* type, Id *id) {
 		while(last_id->csmk == ID && (last_id->type->base == FUN || last_id->type->base == API)) last_id--;
 		if(last_id->csmk == GLO) id->offset = MAXSIZE - type_size(type);
 		else id->offset = last_id->offset - type_size(type);
-	} else {
+	} else if(id->class == LOC) {
 		lid = id + 1;
 		while(last_id->csmk == LOC) last_id--;
 		if(last_id->csmk == FUN || last_id->class == ARG) id->offset = 0;
 		else id->offset = last_id->offset + type_size(last_id->type);
-	}
+	} else if(id->class == ARG) {
+		lid = id + 1;
+		if(last_id->csmk == FUN) id->offset = -3;
+		else id->offset = last_id->offset - type_size(last_id->type);
+	} else error("line %d: error!\n", line);
 }
 
 Id* getid(char *tks) {
@@ -110,16 +114,8 @@ void outblock(void) {
 	} while(lid->csmk != LOC);
 }
 
-void inparam(void) {
-	(lid++)->csmk = FUN;
-}
-
 void infunc(void) {
-	Id *i = lid - 1;
-	int argc = 0;
-	while(i->csmk != FUN) {
-		(i--)->offset -= (argc++) + 3;
-	}
+	(lid++)->csmk = FUN;
 }
 
 void outfunc(void) {

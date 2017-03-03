@@ -221,7 +221,7 @@ void vm_run(int src, int debug) {
 			break;
 		case AL: //address local
 			opr1 = emit[data[IP]++];
-			data[AX] = data[BP] + opr1;//ax = bp + ax
+			data[AX] = data[BP] + opr1; //ax = bp + ax
 			break;
 		case VAL:
 			opr1 = data[AX];
@@ -229,7 +229,7 @@ void vm_run(int src, int debug) {
 			break;
 		case CALL:
 			opr1 = emit[data[IP]++];
-			data[data[SP]++] = data[IP];
+			data[data[SP]++] = data[IP]; //push next_ip
 			data[IP] = data[data[SP] - opr1 - 2];
 			break;
 		case CAPI:
