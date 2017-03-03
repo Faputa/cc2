@@ -12,7 +12,7 @@ void api_init(void) {
 }
 
 void api_register(Api fun, char *proto) {
-	tokensrc(proto);
+	p = proto;
 	next();
 	Id *this_id = gid;
 	declare_glo();

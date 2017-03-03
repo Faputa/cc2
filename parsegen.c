@@ -19,7 +19,7 @@ void parsegen(char *str) {
 	*e++ = EXIT;
 	
 	//parse and gen
-	tokensrc(str);
+	p = str;
 	next();
 	while(strcmp(tks, "") || tki != -1) {
 		declare_glo();

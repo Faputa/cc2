@@ -5,10 +5,10 @@
 #include <malloc.h>
 #include <string.h>
 
-char *tks;
+char *tks, *p;
 int tki, line;
 
-static char *p, *tksls;
+static char *tksls;
 static int ti;
 
 static char *keyword[] = {
@@ -29,10 +29,6 @@ static char *trans[] = {
 void token_init(void) {
 	tksls = (char*)malloc(MAXSIZE * sizeof(char));
 	ti = 0;
-}
-
-void tokensrc(char *str) {
-	p = str;
 	line = 1;
 }
 
