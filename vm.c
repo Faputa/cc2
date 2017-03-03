@@ -229,6 +229,7 @@ void vm_run(int src, int debug) {
 			break;
 		case CALL:
 			opr1 = emit[data[IP]++];
+			data[data[SP]++] = data[IP];
 			data[IP] = data[data[SP] - opr1 - 2];
 			break;
 		case CAPI:

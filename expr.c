@@ -1,4 +1,4 @@
-//è¡¨è¾¾å¼åˆ†æ
+//±í´ïÊ½·ÖÎö
 
 #include "cc.h"
 #include <stdio.h>
@@ -93,7 +93,7 @@ void arr_init_loc(Type *type, int offset) {
 	next();
 }
 
-static int lev(char *opr) { //ä¼˜å…ˆçº§è¶Šé«˜levè¶Šå¤§ï¼Œå…¶ä»–ç¬¦å·levä¸º0
+static int lev(char *opr) { //ÓÅÏÈ¼¶Ô½¸ßlevÔ½´ó£¬ÆäËû·ûºÅlevÎª0
 	char *oprs[] = {
 		")", "]",
 		"", "&&", "||", "!",
@@ -110,7 +110,7 @@ static int lev(char *opr) { //ä¼˜å…ˆçº§è¶Šé«˜levè¶Šå¤§ï¼Œå…¶ä»–ç¬¦å·levä¸º0
 		if(!strcmp(oprs[i], opr)) return lev;
 		else if(!strcmp(oprs[i], "")) lev++;
 	}
-	return 0; //å…¶ä»–ç¬¦å·
+	return 0; //ÆäËû·ûºÅ
 }
 
 int expr_const(char *last_opr) {
@@ -230,13 +230,13 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			if(!er.is_const) *e++ = ASS; else error("line %d: error!\n", line);
 		} else if(!strcmp(tks, "(")) {
 			next();
-			int argc = 0;
-			if(er.type->base == PTR) er.type = er.type->rely; //å°†å‡½æ•°æŒ‡é’ˆè½¬åŒ–ä¸ºå‡½æ•°
+			if(er.type->base == PTR) er.type = er.type->rely; //½«º¯ÊıÖ¸Õë×ª»¯Îªº¯Êı
 			if(er.type->base != FUN && er.type->base != API) error("line %d: error!\n", line);
+			int argc = 0;
 			if(strcmp(tks, ")")) {
 				while(1) {
-					if(argc > er.type->count) error("line %d: error!\n", line); //å‚æ•°è¿‡å¤š
-					type_check((er.type->argtyls)[argc], expr(")").type, "="); //å‚æ•°ç±»å‹æ£€æŸ¥
+					if(argc > er.type->count) error("line %d: error!\n", line); //²ÎÊı¹ı¶à
+					type_check((er.type->argtyls)[argc], expr(")").type, "="); //²ÎÊıÀàĞÍ¼ì²é
 					*e++ = PUSH; *e++ = AX;
 					argc++;
 					if(!strcmp(tks, ")")) break;
@@ -245,17 +245,9 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				}
 			}
 			next();
-			if(argc < er.type->count) error("line %d: error!\n", line); //å‚æ•°è¿‡å°‘
-			if(er.type->base == FUN) {
-				*e++ = SET; *e++ = AX; int *_e = e++; //set next ip
-				*e++ = PUSH; *e++ = AX;
-				*e++ = CALL; *e++ = argc;
-				*_e = e - emit;
-				*e++ = DEC; *e++ = SP; *e++ = argc + 1;
-			} else if(er.type->base == API) {
-				*e++ = CAPI; *e++ = argc;
-				*e++ = DEC; *e++ = SP; *e++ = argc + 1;
-			}
+			if(argc < er.type->count) error("line %d: error!\n", line); //²ÎÊı¹ıÉÙ
+			*e++ = (er.type->base == FUN)? CALL: CAPI; *e++ = argc;
+			*e++ = DEC; *e++ = SP; *e++ = argc + 1;
 			er.type = er.type->rely;
 /*		} else if(!strcmp(tks, "[")) {
 			next();
