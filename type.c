@@ -1,5 +1,4 @@
-
-//ÀàĞÍ±í¡¢²ÎÊıÀàĞÍ±í
+//ç±»å‹è¡¨ã€å‚æ•°ç±»å‹è¡¨
 
 #include "cc.h"
 #include <stdio.h>
@@ -40,7 +39,7 @@ static Type** getargtyls(int count) {
 	return _argtyls;
 }
 
-Type* type_derive(int base, Type *rely, int count) { //ÀàĞÍÉú³É
+Type* type_derive(int base, Type *rely, int count) { //ç±»å‹ç”Ÿæˆ
 	if(rely == NULL) {
 		if(base == INT || base == CHAR || base == VOID || base == NUL) {
 			for(Type *i = tys; i < ty; i++) {
@@ -92,42 +91,42 @@ Type* type_derive(int base, Type *rely, int count) { //ÀàĞÍÉú³É
 
 static void _print_type(Type *type) {
 	if(type->base == PTR) {
-		printf("Ö¸Ïò");
+		printf("æŒ‡å‘");
 		_print_type(type->rely);
-		printf("µÄÖ¸Õë");
+		printf("çš„æŒ‡é’ˆ");
 	} else if(type->base == ARR) {
-		printf("ÓµÓĞ%d¸öÀàĞÍÎª", type->count);
+		printf("æ‹¥æœ‰%dä¸ªç±»å‹ä¸º", type->count);
 		_print_type(type->rely);
-		printf("µÄÔªËØµÄÊı×é");
+		printf("çš„å…ƒç´ çš„æ•°ç»„");
 	} else if(type->base == FUN) {
 		for(int i = 0; i < type->count; i++) {
-			printf("µÚ%d¸ö²ÎÊıÎª", i + 1);
+			printf("ç¬¬%dä¸ªå‚æ•°ä¸º", i + 1);
 			_print_type(type->argtyls[i]);
-			printf("¡¢");
+			printf("ã€");
 		}
-		printf("·µ»ØÖµÎª");
+		printf("è¿”å›å€¼ä¸º");
 		_print_type(type->rely);
-		printf("µÄº¯Êı");
+		printf("çš„å‡½æ•°");
 	} else if(type->base == API) {
 		for(int i = 0; i < type->count; i++) {
-			printf("µÚ%d¸ö²ÎÊıÎª", i + 1);
+			printf("ç¬¬%dä¸ªå‚æ•°ä¸º", i + 1);
 			_print_type(type->argtyls[i]);
-			printf("¡¢");
+			printf("ã€");
 		}
-		printf("·µ»ØÖµÎª");
+		printf("è¿”å›å€¼ä¸º");
 		_print_type(type->rely);
-		printf("µÄAPI");
+		printf("çš„API");
 	} else if(type->base == INT) {
-		printf("ÕûĞÍ");
+		printf("æ•´å‹");
 	} else if(type->base == CHAR) {
-		printf("×Ö·ûĞÍ");
+		printf("å­—ç¬¦å‹");
 	} else if(type->base == VOID) {
-		printf("¿Õ");
+		printf("ç©º");
 	}
 }
 
 void print_type(Id *id) {
-	printf("%sÎª", id->name);
+	printf("%sä¸º", id->name);
 	_print_type(id->type);
 	//printf("\n");
 }
