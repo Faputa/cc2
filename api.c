@@ -14,11 +14,11 @@ void api_init(void) {
 void api_register(Api fun, char *proto) {
 	p = proto;
 	next();
-	Id *this_id = gid;
+	Id *id = gid;
 	declare_glo();
-	if(this_id->type->base != FUN) error("line %d: error!\n", line);
-	this_id->type->base = API;
-	this_id->offset = api - apis;
+	if(id->type->base != FUN) error("line %d: error!\n", line);
+	id->type->base = API;
+	id->offset = api - apis;
 	*api++ = fun;
 }
 
