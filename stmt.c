@@ -65,7 +65,7 @@ void stmt(void) {
 			if(strcmp(tks, ";")) error("line %d: error!\n", line);
 			*e++ = JZ; _e4 = e++;
 		}
-		*e++ = JMP; int *_e3 = e++; 
+		*e++ = JMP; int *_e3 = e++;
 		next();
 		int *_e2 = e;
 		if(strcmp(tks, ")")) {

@@ -88,8 +88,8 @@ void setid(Type* type, Id *id) {
 		else id->offset = last_id->offset + type_size(last_id->type);
 	} else if(id->class == ARG) {
 		lid = id + 1;
-		if(last_id->csmk == FUN) id->offset = -3;
-		else id->offset = last_id->offset - type_size(last_id->type);
+		if(last_id->csmk == FUN) id->offset = -2 - type_size(type);
+		else id->offset = last_id->offset - type_size(type);
 	} else error("line %d: error!\n", line);
 }
 

@@ -212,8 +212,7 @@ void vm_run(int src, int debug) {
 			data[AX] = opr2 || opr1;
 			break;
 		case NOT:
-			opr1 = data[AX];
-			data[AX] = !opr1;
+			data[AX] = !data[AX];
 			break;
 		case AG: //address global
 			opr1 = emit[data[IP]++];
@@ -221,11 +220,10 @@ void vm_run(int src, int debug) {
 			break;
 		case AL: //address local
 			opr1 = emit[data[IP]++];
-			data[AX] = data[BP] + opr1; //ax = bp + ax
+			data[AX] = data[BP] + opr1;
 			break;
 		case VAL:
-			opr1 = data[AX];
-			data[AX] = data[opr1];
+			data[AX] = data[data[AX]];
 			break;
 		case CALL:
 			opr1 = emit[data[IP]++];

@@ -10,17 +10,13 @@
 static int varc;
 
 static Type* specifier(void) {
-	if(tki == Int) {
-		next();
-		return typeint;
-	} else if(tki == Char) {
-		next();
-		return typechar;
-	} else if(tki == Void) {
-		next();
-		return type_derive(VOID, NULL, 0);
-	} else error("line %d: error!\n", line);
-	return NULL; //make compiler happy
+	Type *t;
+	if(tki == Int) t = typeint;
+	else if(tki == Char) t = typechar;
+	else if(tki == Void) t = type_derive(VOID, NULL, 0);
+	else error("line %d: error!\n", line);
+	next();
+	return t;
 }
 
 static int lev(char *opr) {
