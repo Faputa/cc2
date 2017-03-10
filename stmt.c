@@ -59,7 +59,7 @@ void stmt(void) {
 		}
 		next();
 		int *_e1 = e;
-		int *_e4;
+		int *_e4 = NULL;
 		if(strcmp(tks, ";")) {
 			expr("");
 			if(strcmp(tks, ";")) error("line %d: error!\n", line);
@@ -77,7 +77,7 @@ void stmt(void) {
 		*_e3 = e - emit;
 		stmt();
 		*e++ = JMP; *e++ = _e2 - emit;
-		*_e4 = e - emit;
+		if(_e4) *_e4 = e - emit;
 		outblock();
 	} else if(tki == While) {
 		int *_e1 = e;

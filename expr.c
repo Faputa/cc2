@@ -6,17 +6,15 @@
 #include <string.h>
 
 int ptr_const(Type *type) {
-	if(tki == Null) {
-		next();
-		return 0;
-	} else if(tki == STR) {
-		if(type->rely->base == CHAR) {
-			int offset = sgetstr(tks)->offset;
-			next();
-			return offset;
-		} else error("line %d: error!\n", line);
-	} else error("line %d: error!\n", line);
-	return 0; //make compiler happy
+	int i;
+	if(tki == Null) i = 0;
+	else if(tki == STR) {
+		if(type->rely->base == CHAR) i = sgetstr(tks)->offset;
+		else error("line %d: error!\n", line);
+	}
+	else error("line %d: error!\n", line);
+	next();
+	return i;
 }
 
 void arr_init_glo(Type *type, int offset) {
