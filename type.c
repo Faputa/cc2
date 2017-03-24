@@ -86,7 +86,7 @@ Type* type_derive(int base, Type *rely, int count) { //类型生成
 			return ty++;
 		} else error("line %d: error!\n", line);
 	}
-	return NULL; //make compiler happy
+	return NULL; //to avoid warnings
 }
 
 static void _print_type(Type *type) {

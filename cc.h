@@ -12,7 +12,7 @@ typedef struct Type {
 } Type;
 
 typedef struct {
-	int csmk; //class mark
+	int kind;
 	char *name;
 	Type *type;
 	int offset;
