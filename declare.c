@@ -38,7 +38,6 @@ static int lev(char *opr) {
 }
 
 static Id* decl_expr(Type *type, int scope);
-//生成复杂类型栈
 static void complex(char *last_opr, Id *id) { //复杂类型分析
 	//前置符号
 	if(!strcmp(tks, "*")) { //指针
@@ -92,7 +91,7 @@ static Id* decl_expr(Type *type, int scope) {
 	Id *id = (scope == GLO)? gid: lid;
 	id->class = scope;
 	int *_cpx = cpx;
-	complex("", id);
+	complex("", id); //生成复杂类型栈
 	while(cpx > _cpx) {
 		int base = *--cpx;
 		int count = *--cpx;
