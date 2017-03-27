@@ -66,6 +66,7 @@ int main(int argc, char *argv[]) {
 	fclose(fp);
 	
 	//init
+	decl_init();
 	type_init();
 	token_init();
 	ident_init();

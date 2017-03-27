@@ -6,9 +6,11 @@
 #include <string.h>
 
 static Api *api, *apis;
+static char *strbuf;
 
 void api_init(void) {
 	apis = api = (Api*)malloc(MAXSIZE * sizeof(Api));
+	strbuf = (char*)malloc(MAXSIZE * sizeof(char));
 }
 
 void api_register(Api fun, char *proto) {
@@ -37,7 +39,6 @@ char api_getchar(int index) {
 char* api_getstr(int index) { //返回一个临时的字符串，必须及时保存
 	int *str = data + data[data[SP] - index];
 	int i = 0;
-	static char strbuf[BUFSIZE];
 	while(str[i]) {
 		strbuf[i] = str[i];
 		i++;

@@ -7,7 +7,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-static int varc;
+static int varc, *cpx;
+
+void decl_init(void) {
+	cpx = (int*)malloc(MAXSIZE * sizeof(int));
+}
 
 static Type* specifier(void) {
 	Type *t;
@@ -33,17 +37,18 @@ static int lev(char *opr) {
 	return 0; //其他符号
 }
 
-static Id* declarator(Type *type, int scope);
-static int* complex(char *last_opr, int *cpx, Id *id) { //复杂类型分析
+static Id* decl_expr(Type *type, int scope);
+//生成复杂类型栈
+static void complex(char *last_opr, Id *id) { //复杂类型分析
 	//前置符号
 	if(!strcmp(tks, "*")) { //指针
 		next();
-		cpx = complex("*", cpx, id);
+		complex("*", id);
 		cpx++;
 		*cpx++ = PTR;
 	} else if(!strcmp(tks, "(")) { //括号
 		next();
-		cpx = complex(")", cpx, id);
+		complex(")", id);
 		if(strcmp(tks, ")")) error("line %d: error!\n", line);
 		next();
 	} else if(tki == ID) {
@@ -70,7 +75,7 @@ static int* complex(char *last_opr, int *cpx, Id *id) { //复杂类型分析
 				while(1) {
 					count++;
 					Type *type = specifier();
-					declarator(type, ARG);
+					decl_expr(type, ARG);
 					if(!strcmp(tks, ")")) break;
 					else if(!strcmp(tks, ",")) next();
 					else error("line %d: error!\n", line);
@@ -81,16 +86,14 @@ static int* complex(char *last_opr, int *cpx, Id *id) { //复杂类型分析
 		} else error("line %d: error!\n", line);
 		next();
 	}
-	return cpx; //update cpx
 }
 
-static Id* declarator(Type *type, int scope) {
+static Id* decl_expr(Type *type, int scope) {
 	Id *id = (scope == GLO)? gid: lid;
 	id->class = scope;
-	int cpxs[BUFSIZE]; //复杂类型栈
-	int *cpx = cpxs; //复杂类型栈栈顶指针
-	cpx = complex("", cpx, id);
-	while(cpx > cpxs) {
+	int *_cpx = cpx;
+	complex("", id);
+	while(cpx > _cpx) {
 		int base = *--cpx;
 		int count = *--cpx;
 		type = type_derive(base, type, count);
@@ -108,7 +111,7 @@ void declare_loc(void) {
 	Type *type = specifier();
 	while(1) {
 		//varc++;
-		Id *id = declarator(type, LOC);
+		Id *id = decl_expr(type, LOC);
 		if(!strcmp(tks, "=")) {
 			next();
 			if(id->type->base == INT || id->type->base == CHAR || id->type->base == PTR) {
@@ -129,7 +132,7 @@ void declare_loc(void) {
 
 void declare_glo(void) {
 	Type *type = specifier();
-	Id *id = declarator(type, GLO);
+	Id *id = decl_expr(type, GLO);
 	if(id->type->base == FUN) {
 		if(!strcmp(tks, "{")) {
 			varc = 0;
@@ -170,7 +173,7 @@ void declare_glo(void) {
 			if(!strcmp(tks, ";")) break;
 			else if(!strcmp(tks, ",")) {
 				next();
-				id = declarator(type, GLO);
+				id = decl_expr(type, GLO);
 			} else error("line %d: error!\n", line);
 		}
 	}
