@@ -141,8 +141,7 @@ void declare_glo(void) {
 			*e++ = INC; *e++ = SP; int *_e = e++;
 			next();
 			while(strcmp(tks, "}")) {
-				if(tki == Int || tki == Char || tki == Void) declare_loc();
-				else stmt();
+				stmt();
 				next();
 			}
 			*_e = varc;
