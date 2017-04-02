@@ -5,21 +5,13 @@
 #include <stdlib.h>
 #include <string.h>
 
-static void stmt_expr(void) {
-	if(tki == Int || tki == Char || tki == Void) {
-		declare_loc();
-	} else {
-		expr("");
-		if(strcmp(tks, ";")) error("line %d: error!\n", line);
-	}
-}
-
 void stmt(void) {
 	if(!strcmp(tks, "{")) {
 		inblock();
 		next();
 		while(strcmp(tks, "}")) {
-			stmt();
+			if(tki == Int || tki == Char || tki == Void) declare_loc();
+			else stmt();
 			next();
 		}
 		outblock();
@@ -61,7 +53,11 @@ void stmt(void) {
 		next();
 		if(!strcmp(tks, "(")) next(); else error("line %d: error!\n", line);
 		if(strcmp(tks, ";")) {
-			stmt_expr();
+			if(tki == Int || tki == Char || tki == Void) declare_loc();
+			else {
+				expr("");
+				if(strcmp(tks, ";")) error("line %d: error!\n", line);
+			}
 		}
 		next();
 		int *_e1 = e;
@@ -102,7 +98,8 @@ void stmt(void) {
 		*e++ = POP; *e++ = IP;
 	} else {
 		if(strcmp(tks, ";")) {
-			stmt_expr();
+			expr("");
+			if(strcmp(tks, ";")) error("line %d: error!\n", line);
 		}
 	}
 }
