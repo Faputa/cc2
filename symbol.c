@@ -12,7 +12,7 @@ static Sym *gsyms, *lsyms;
 void symbol_init(void) {
 	gsyms = gsym = (Sym*)malloc(MAXSIZE * sizeof(Sym));
 	lsyms = lsym = (Sym*)malloc(MAXSIZE * sizeof(Sym));
-	gsym++->kind = GLO;
+	(gsym++)->kind = GLO;
 }
 
 void print_sym(void) {
