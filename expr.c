@@ -9,7 +9,7 @@ int ptr_const(Type *type) {
 	int i;
 	if(tki == Null) i = 0;
 	else if(tki == STR) {
-		if(type->rely->base == CHAR) i = sgetstr(tks)->offset;
+		if(type->base->tykind == CHAR) i = sgetstr(tks)->offset;
 		else error("line %d: error!\n", line);
 	}
 	else error("line %d: error!\n", line);
@@ -25,16 +25,16 @@ void arr_init_glo(Type *type, int offset) {
 		if(strcmp(tks, "}")) {
 			while(1) {
 				count++;
-				if(type->rely->base == INT) data[offset] = expr_const("");
-				else if(type->rely->base == CHAR) data[offset] = expr_const("");
-				else if(type->rely->base == PTR) data[offset] = ptr_const(type->rely);
-				else if(type->rely->base == ARR) arr_init_glo(type->rely, offset);
+				if(type->base->tykind == INT) data[offset] = expr_const("");
+				else if(type->base->tykind == CHAR) data[offset] = expr_const("");
+				else if(type->base->tykind == PTR) data[offset] = ptr_const(type->base);
+				else if(type->base->tykind == ARR) arr_init_glo(type->base, offset);
 				else error("line %d: error!\n", line);
 				
 				if(!strcmp(tks, "}")) {
 					break;
 				} else if(!strcmp(tks, ",")) {
-					offset += type_size(type->rely);
+					offset += type_size(type->base);
 					next();
 				} else error("line %d: error!\n", line);
 			}
@@ -42,7 +42,7 @@ void arr_init_glo(Type *type, int offset) {
 		if(type->count < count) error("line %d: error!\n", line);
 	} else if(tki == STR) {
 		Id *strid = sgetstr(tks);
-		if(type->rely->base != CHAR) error("line %d: error!\n", line);
+		if(type->base->tykind != CHAR) error("line %d: error!\n", line);
 		if(type->count < strid->type->count) error("line %d: error!\n", line);
 		for(int i = 0; i < strid->type->count; i++) {
 			data[offset + i] = data[strid->offset + i];
@@ -58,19 +58,19 @@ void arr_init_loc(Type *type, int offset) {
 		if(strcmp(tks, "}")) {
 			while(1) {
 				count++;
-				if(type->rely->base == INT || type->rely->base == CHAR || type->rely->base == PTR) {
+				if(type->base->tykind == INT || type->base->tykind == CHAR || type->base->tykind == PTR) {
 					*e++ = AL; *e++ = offset;
 					*e++ = PUSH; *e++ = AX;
-					type_check(type->rely, expr("").type, "=");
+					type_check(type->base, expr("").type, "=");
 					*e++ = ASS;
 				}
-				else if(type->rely->base == ARR) arr_init_loc(type->rely, offset);
+				else if(type->base->tykind == ARR) arr_init_loc(type->base, offset);
 				else error("line %d: error!\n", line);
 				
 				if(!strcmp(tks, "}")) {
 					break;
 				} else if(!strcmp(tks, ",")) {
-					offset += type_size(type->rely);
+					offset += type_size(type->base);
 					next();
 				} else error("line %d: error!\n", line);
 			}
@@ -78,7 +78,7 @@ void arr_init_loc(Type *type, int offset) {
 		if(type->count < count) error("line %d: error!\n", line);
 	} else if(tki == STR) {
 		Id *strid = sgetstr(tks);
-		if(type->rely->base != CHAR) error("line %d: error!\n", line);
+		if(type->base->tykind != CHAR) error("line %d: error!\n", line);
 		if(type->count < strid->type->count) error("line %d: error!\n", line);
 		for(int i = 0; i < strid->type->count; i++) {
 			*e++ = AL; *e++ = offset + i;
@@ -176,8 +176,8 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 	} else if(tki == ID) {
 		Id *this_id = getid(tks);
 		er.type = this_id->type;
-		*e++ = this_id->class == GLO? AG: AL; *e++ = this_id->offset;
-		if(er.type->base == INT || er.type->base == CHAR || er.type->base == PTR) {
+		*e++ = this_id->idkind == GLO? AG: AL; *e++ = this_id->offset;
+		if(er.type->tykind == INT || er.type->tykind == CHAR || er.type->tykind == PTR) {
 			*e++ = VAL;
 			er.is_const = 0;
 		}
@@ -190,9 +190,9 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 	} else if(!strcmp(tks, "*")) {
 		next();
 		er.type = expr("*_").type;
-		if(er.type->base != PTR) error("line %d: error!\n", line);
-		er.type = er.type->rely;
-		if(er.type->base == INT || er.type->base == CHAR || er.type->base == PTR) {
+		if(er.type->tykind != PTR) error("line %d: error!\n", line);
+		er.type = er.type->base;
+		if(er.type->tykind == INT || er.type->tykind == CHAR || er.type->tykind == PTR) {
 			*e++ = VAL;
 			er.is_const = 0;
 		}
@@ -201,20 +201,20 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		next();
 		Er _er = expr("&_");
 		if(!_er.is_lvalue) error("line %d: error!\n", line);
-		if(_er.type->base == INT || _er.type->base == PTR) e--;
+		if(_er.type->tykind == INT || _er.type->tykind == PTR) e--;
 		er.type = type_derive(PTR, _er.type, 0);
 	} else if(!strcmp(tks, "!")) {
 		next();
 		er.type = expr("!").type;
-		if(er.type->base != INT) er.type = typeint;
+		if(er.type->tykind != INT) er.type = typeint;
 		*e++ = NOT;
 	} else if(!strcmp(tks, "-")) {
 		next();
 		*e++ = SET; *e++ = AX; *e++ = 0;
 		*e++ = PUSH; *e++ = AX;
 		er.type = expr("-").type;
-		if(er.type->base == CHAR) er.type = typeint;
-		else if(er.type->base != INT) error("line %d: error!\n", line);
+		if(er.type->tykind == CHAR) er.type = typeint;
+		else if(er.type->tykind != INT) error("line %d: error!\n", line);
 		*e++ = SUB;
 	} else error("line %d: error!\n", line);
 	
@@ -228,8 +228,8 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			if(!er.is_const) *e++ = ASS; else error("line %d: error!\n", line);
 		} else if(!strcmp(tks, "(")) {
 			next();
-			if(er.type->base == PTR) er.type = er.type->rely; //将函数指针转化为函数
-			if(er.type->base != FUN && er.type->base != API) error("line %d: error!\n", line);
+			if(er.type->tykind == PTR) er.type = er.type->base; //将函数指针转化为函数
+			if(er.type->tykind != FUN && er.type->tykind != API) error("line %d: error!\n", line);
 			int argc = 0;
 			if(strcmp(tks, ")")) {
 				int *_e1 = e;
@@ -251,9 +251,9 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				}
 			}
 			next();
-			*e++ = (er.type->base == FUN)? CALL: CAPI; *e++ = argc;
+			*e++ = (er.type->tykind == FUN)? CALL: CAPI; *e++ = argc;
 			*e++ = DEC; *e++ = SP; *e++ = argc + 1;
-			er.type = er.type->rely;
+			er.type = er.type->base;
 /*		} else if(!strcmp(tks, "[")) {
 			next();
 			int *_e3 = e;
@@ -261,7 +261,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			if(!strcmp(tks, "]")) next(); else error("line %d: error!\n", line);
 			type_check(er.type, type, "[");
 			int *_e4 = e;
-			if(type->base == PTR || type->base == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
+			if(type->tykind == PTR || type->tykind == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
 				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
 				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
 				memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
@@ -269,11 +269,11 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				er.type = type;
 			}
 			*e++ = PUSH; *e++ = AX;
-			*e++ = SET; *e++ = AX; *e++ = type_size(er.type-rely);
+			*e++ = SET; *e++ = AX; *e++ = type_size(er.type-base);
 			*e++ = MUL;
 			*e++ = ADD;
-			er.type = er.type->rely;
-			if(er.type->base == INT || er.type->base == CHAR || er.type->base == PTR) {
+			er.type = er.type->base;
+			if(er.type->tykind == INT || er.type->tykind == CHAR || er.type->tykind == PTR) {
 				*e++ = VAL;
 				er.is_const = 0;
 			}
@@ -285,21 +285,21 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			Type *type = expr(opr).type;
 			type_check(er.type, type, opr);
 			int *_e4 = e;
-			if(type->base == PTR || type->base == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
+			if(type->tykind == PTR || type->tykind == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
 				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
 				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
 				memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
 				memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
 				er.type = type;
 			}
-			if(er.type->base == INT || er.type->base == CHAR) {
+			if(er.type->tykind == INT || er.type->tykind == CHAR) {
 				*e++ = !strcmp(opr, "+")? ADD: SUB;
-			} else if(er.type->base == PTR || er.type->base == ARR) {
+			} else if(er.type->tykind == PTR || er.type->tykind == ARR) {
 				*e++ = PUSH; *e++ = AX;
-				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->rely);
+				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->base);
 				*e++ = MUL;
 				*e++ = !strcmp(opr, "+")? ADD: SUB;
-				if(er.type->base == ARR) er.type = type_derive(PTR, er.type->rely, 0);
+				if(er.type->tykind == ARR) er.type = type_derive(PTR, er.type->base, 0);
 			} else error("line %d: error!\n", line);*/
 		} else if(!strcmp(tks, "+") || !strcmp(tks, "-") || !strcmp(tks, "[")) {
 			char *opr = tks;
@@ -314,30 +314,30 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			}
 			type_check(er.type, type, opr);
 			int *_e4 = e;
-			if(type->base == PTR || type->base == ARR) {
+			if(type->tykind == PTR || type->tykind == ARR) {
 				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
 				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
 				memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
 				memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
 				er.type = type;
 			}
-			if(er.type->base == INT || er.type->base == CHAR) {
+			if(er.type->tykind == INT || er.type->tykind == CHAR) {
 				if(!strcmp(opr, "+")) *e++ = ADD;
 				else if(!strcmp(opr, "-")) *e++ = SUB;
 				else error("line %d: error!\n", line);
-			} else if(er.type->base == PTR || er.type->base == ARR) {
+			} else if(er.type->tykind == PTR || er.type->tykind == ARR) {
 				*e++ = PUSH; *e++ = AX;
-				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->rely);
+				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->base);
 				*e++ = MUL;
 				*e++ = !strcmp(opr, "-")? SUB: ADD;
 				if(!strcmp(opr, "[")) {
-					er.type = er.type->rely;
-					if(er.type->base == INT || er.type->base == CHAR || er.type->base == PTR) {
+					er.type = er.type->base;
+					if(er.type->tykind == INT || er.type->tykind == CHAR || er.type->tykind == PTR) {
 						*e++ = VAL;
 						er.is_const = 0;
 					}
 					er.is_lvalue = 1;
-				} else if(er.type->base == ARR) er.type = type_derive(PTR, er.type->rely, 0);
+				} else if(er.type->tykind == ARR) er.type = type_derive(PTR, er.type->base, 0);
 			} else error("line %d: error!\n", line);
 		} else {
 			char *opr = tks;

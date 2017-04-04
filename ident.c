@@ -23,7 +23,7 @@ void print_ids(void) {
 		else if(i->kind == ID) {
 			printf("%s ", i->name);
 			printf("%d ", i->offset);
-			if(i->class == GLO) printf("GLO ");
+			if(i->idkind == GLO) printf("GLO ");
 			print_type(i);
 		}
 		printf("\n");
@@ -35,8 +35,8 @@ void print_ids(void) {
 		else if(i->kind == ID) {
 			printf("%s ", i->name);
 			printf("%d ", i->offset);
-			if(i->class == ARG) printf("ARG ");
-			if(i->class == LOC) printf("LOC ");
+			if(i->idkind == ARG) printf("ARG ");
+			if(i->idkind == LOC) printf("LOC ");
 			print_type(i);
 		}
 		printf("\n");
@@ -56,7 +56,7 @@ Id* sgetstr(char *tks) {
 	this_id->type = type_derive(ARR, typechar, strlen(tks) + 1);
 	this_id->kind = STR;
 	
-	while(last_id->kind == ID && (last_id->type->base == FUN || last_id->type->base == API)) last_id--;
+	while(last_id->kind == ID && (last_id->type->tykind == FUN || last_id->type->tykind == API)) last_id--;
 	if(last_id == gids) this_id->offset = MAXSIZE - type_size(this_id->type);
 	else this_id->offset = last_id->offset - type_size(this_id->type);
 	
@@ -69,24 +69,24 @@ Id* sgetstr(char *tks) {
 
 void setid(Type* type, Id *id) {
 	for(Id *i = id - 1; i->kind == ID || i->kind == STR; i--) {
-		if(!strcmp(id->name, i->name) && i->kind != STR) error("line %d: error!\n", line);
+		if(i->kind == ID && !strcmp(id->name, i->name)) error("line %d: error!\n", line);
 	}
 	
 	id->type = type;
 	id->kind = ID;
 	
 	Id *last_id = id - 1;
-	if(id->class == GLO) {
+	if(id->idkind == GLO) {
 		gid = id + 1;
-		while(last_id->kind == ID && (last_id->type->base == FUN || last_id->type->base == API)) last_id--;
+		while(last_id->kind == ID && (last_id->type->tykind == FUN || last_id->type->tykind == API)) last_id--;
 		if(last_id->kind == GLO) id->offset = MAXSIZE - type_size(type);
 		else id->offset = last_id->offset - type_size(type);
-	} else if(id->class == LOC) {
+	} else if(id->idkind == LOC) {
 		lid = id + 1;
 		while(last_id->kind == LOC) last_id--;
-		if(last_id->kind == FUN || last_id->class == ARG) id->offset = 0;
+		if(last_id->kind == FUN || last_id->idkind == ARG) id->offset = 0;
 		else id->offset = last_id->offset + type_size(last_id->type);
-	} else if(id->class == ARG) {
+	} else if(id->idkind == ARG) {
 		lid = id + 1;
 		if(last_id->kind == FUN) id->offset = -2 - type_size(type);
 		else id->offset = last_id->offset - type_size(type);

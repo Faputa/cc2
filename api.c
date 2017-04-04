@@ -18,8 +18,8 @@ void api_register(Api fun, char *proto) {
 	next();
 	Id *id = gid;
 	declare_glo();
-	if(id->type->base != FUN) error("line %d: error!\n", line);
-	id->type->base = API;
+	if(id->type->tykind != FUN) error("line %d: error!\n", line);
+	id->type->tykind = API;
 	id->offset = api - apis;
 	*api++ = fun;
 }

@@ -39,48 +39,48 @@ static Type** getargtyls(int count) {
 	return _argtyls;
 }
 
-Type* type_derive(int base, Type *rely, int count) { //类型生成
-	if(rely == NULL) {
-		if(base == INT || base == CHAR || base == VOID || base == NUL) {
+Type* type_derive(int tykind, Type *base, int count) { //类型生成
+	if(base == NULL) {
+		if(tykind == INT || tykind == CHAR || tykind == VOID || tykind == NUL) {
 			for(Type *i = tys; i < ty; i++) {
-				if(i->base == base
-				&& i->rely == NULL) return i;
+				if(i->tykind == tykind
+				&& i->base == NULL) return i;
 			}
-			ty->base = base;
-			ty->rely = NULL;
+			ty->tykind = tykind;
+			ty->base = NULL;
 			return ty++;
 		} else error("line %d: error!\n", line);
 	} else {
-		if(base == PTR) {
+		if(tykind == PTR) {
 			for(Type *i = tys; i < ty; i++) {
-				if(i->base == base
-				&& i->rely == rely) return i;
+				if(i->tykind == tykind
+				&& i->base == base) return i;
 			}
+			ty->tykind = tykind;
 			ty->base = base;
-			ty->rely = rely;
 			return ty++;
-		} else if(base == ARR) {
-			if(rely->base == FUN || rely->base == VOID) error("line %d: error!\n", line);
+		} else if(tykind == ARR) {
+			if(base->tykind == FUN || base->tykind == VOID) error("line %d: error!\n", line);
 			for(Type *i = tys; i < ty; i++) {
-				if(i->base == base
-				&& i->rely == rely
+				if(i->tykind == tykind
+				&& i->base == base
 				&& i->count == count) return i;
 			}
+			ty->tykind = tykind;
 			ty->base = base;
-			ty->rely = rely;
 			ty->count = count;
 			return ty++;
-		} else if(base == FUN) {// || base == API) {
-			if(rely->base == FUN || rely->base == ARR) error("line %d: error!\n", line);
+		} else if(tykind == FUN) {// || tykind == API) {
+			if(base->tykind == FUN || base->tykind == ARR) error("line %d: error!\n", line);
 			Type **argtyls = getargtyls(count);
 			for(Type *i = tys; i < ty; i++) {
-				if(i->base == base
-				&& i->rely == rely
+				if(i->tykind == tykind
+				&& i->base == base
 				&& i->count == count
 				&& i->argtyls == argtyls) return i;
 			}
+			ty->tykind = tykind;
 			ty->base = base;
-			ty->rely = rely;
 			ty->count = count;
 			ty->argtyls = argtyls;
 			return ty++;
@@ -90,37 +90,37 @@ Type* type_derive(int base, Type *rely, int count) { //类型生成
 }
 
 static void _print_type(Type *type) {
-	if(type->base == PTR) {
+	if(type->tykind == PTR) {
 		printf("指向");
-		_print_type(type->rely);
+		_print_type(type->base);
 		printf("的指针");
-	} else if(type->base == ARR) {
+	} else if(type->tykind == ARR) {
 		printf("拥有%d个类型为", type->count);
-		_print_type(type->rely);
+		_print_type(type->base);
 		printf("的元素的数组");
-	} else if(type->base == FUN) {
+	} else if(type->tykind == FUN) {
 		for(int i = 0; i < type->count; i++) {
 			printf("第%d个参数为", i + 1);
 			_print_type(type->argtyls[i]);
 			printf("、");
 		}
 		printf("返回值为");
-		_print_type(type->rely);
+		_print_type(type->base);
 		printf("的函数");
-	} else if(type->base == API) {
+	} else if(type->tykind == API) {
 		for(int i = 0; i < type->count; i++) {
 			printf("第%d个参数为", i + 1);
 			_print_type(type->argtyls[i]);
 			printf("、");
 		}
 		printf("返回值为");
-		_print_type(type->rely);
+		_print_type(type->base);
 		printf("的API");
-	} else if(type->base == INT) {
+	} else if(type->tykind == INT) {
 		printf("整型");
-	} else if(type->base == CHAR) {
+	} else if(type->tykind == CHAR) {
 		printf("字符型");
-	} else if(type->base == VOID) {
+	} else if(type->tykind == VOID) {
 		printf("空");
 	}
 }
@@ -132,62 +132,62 @@ void print_type(Id *id) {
 }
 
 int type_size(Type *type) {
-	if(type->base == INT) return 1;
-	else if(type->base == CHAR) return 1;
-	else if(type->base == PTR) return 1;
-	else if(type->base == ARR) return type_size(type->rely) * type->count;
+	if(type->tykind == INT) return 1;
+	else if(type->tykind == CHAR) return 1;
+	else if(type->tykind == PTR) return 1;
+	else if(type->tykind == ARR) return type_size(type->base) * type->count;
 	return 0;
 }
 
 void type_check(Type *type1, Type *type2, char *opr) {
 	if(!strcmp(opr, "=")) {
-		if(type1->base == INT || type1->base == CHAR) {
-			if(type2->base == INT);
-			else if(type2->base == CHAR);
+		if(type1->tykind == INT || type1->tykind == CHAR) {
+			if(type2->tykind == INT);
+			else if(type2->tykind == CHAR);
 			else error("line %d: error!\n", line);
-		} else if(type1->base == PTR) {
+		} else if(type1->tykind == PTR) {
 			if(type1 == type2);
-			else if(type2->base == NUL);
-			else if(type2->base == FUN && type2 == type1->rely);
-			else if(type2->base == ARR && type2->rely == type1->rely);
-			else if(type2->base == PTR && type2->rely->base == VOID);
+			else if(type2->tykind == NUL);
+			else if(type2->tykind == FUN && type2 == type1->base);
+			else if(type2->tykind == ARR && type2->base == type1->base);
+			else if(type2->tykind == PTR && type2->base->tykind == VOID);
 			else error("line %d: error!\n", line);
 		}
 	} else if(!strcmp(opr, "+") || !strcmp(opr, "-") || !strcmp(opr, "[")) {
-		if(type2->base == PTR || type2->base == ARR) {
+		if(type2->tykind == PTR || type2->tykind == ARR) {
 			Type *tmp = type1; type1 = type2; type2 = tmp;
 		}
-		if(type1->base == INT || type1->base == CHAR) {
+		if(type1->tykind == INT || type1->tykind == CHAR) {
 			if(!strcmp(opr, "[")) error("line %d: error!\n", line);
 		}
-		else if(type1->base == PTR || type1->base == ARR);
+		else if(type1->tykind == PTR || type1->tykind == ARR);
 		else error("line %d: error!\n", line);
-		if(type2->base == INT || type2->base == CHAR);
+		if(type2->tykind == INT || type2->tykind == CHAR);
 		else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "*") || !strcmp(opr, "/") || !strcmp(opr, "%")) {
-		if(type1->base == INT || type1->base == CHAR) {
-			if(type2->base == INT);
-			else if(type2->base == CHAR);
+		if(type1->tykind == INT || type1->tykind == CHAR) {
+			if(type2->tykind == INT);
+			else if(type2->tykind == CHAR);
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "==") || !strcmp(opr, ">") || !strcmp(opr, "<") || !strcmp(opr, "!=") || !strcmp(opr, ">=") || !strcmp(opr, "<=")) {
-		if(type1->base == INT || type1->base == CHAR) {
-			if(type2->base == INT);
-			else if(type2->base == CHAR);
+		if(type1->tykind == INT || type1->tykind == CHAR) {
+			if(type2->tykind == INT);
+			else if(type2->tykind == CHAR);
 			else error("line %d: error!\n", line);
-		} else if(type1->base == PTR) {
+		} else if(type1->tykind == PTR) {
 			if(type1 == type2);
-			else if(type2->base == NUL);
+			else if(type2->tykind == NUL);
 			else error("line %d: error!\n", line);
-		} else if(type1->base == NUL) {
+		} else if(type1->tykind == NUL) {
 			if(type1 == type2);
-			else if(type2->base == PTR);
+			else if(type2->tykind == PTR);
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "&&") || !strcmp(opr, "||")) {
-		if(type1->base == INT || type1->base == CHAR) {
-			if(type2->base == INT);
-			else if(type2->base == CHAR);
+		if(type1->tykind == INT || type1->tykind == CHAR) {
+			if(type2->tykind == INT);
+			else if(type2->tykind == CHAR);
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
 	} else error("line %d: error!\n", line);

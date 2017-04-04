@@ -5,18 +5,18 @@
 #define BUFSIZE 100
 
 typedef struct Type {
-	int base;
+	int tykind;
 	int count;
-	struct Type *rely;
+	struct Type *base;
 	struct Type **argtyls;
 } Type;
 
 typedef struct {
 	int kind;
+	int idkind;
+	int offset;
 	char *name;
 	Type *type;
-	int offset;
-	int class;
 } Id;
 
 typedef struct {
@@ -60,7 +60,7 @@ void outfunc(void);
 void type_init(void);
 int type_size(Type *type);
 void type_check(Type *type1, Type *type2, char *opr);
-Type* type_derive(int base, Type *rely, int count);
+Type* type_derive(int tykind, Type *base, int count);
 void print_type(Id *this_id);
 
 //declare.c

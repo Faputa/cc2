@@ -89,18 +89,18 @@ static void complex(char *last_opr, Id *id) { //复杂类型分析
 
 static Id* decl_expr(Type *type, int scope) {
 	Id *id = (scope == GLO)? gid: lid;
-	id->class = scope;
+	id->idkind = scope;
 	int *_cpx = cpx;
 	complex("", id); //生成复杂类型栈
 	while(cpx > _cpx) {
-		int base = *--cpx;
+		int tykind = *--cpx;
 		int count = *--cpx;
-		type = type_derive(base, type, count);
+		type = type_derive(tykind, type, count);
 	}
-	if(type->base == FUN && scope == ARG) {
+	if(type->tykind == FUN && scope == ARG) {
 		type = type_derive(PTR, type, 0);
-	} else if(type->base == ARR && scope == ARG) {
-		type = type_derive(PTR, type->rely, 0);
+	} else if(type->tykind == ARR && scope == ARG) {
+		type = type_derive(PTR, type->base, 0);
 	}
 	setid(type, id);
 	return id;
@@ -113,12 +113,12 @@ void declare_loc(void) {
 		Id *id = decl_expr(type, LOC);
 		if(!strcmp(tks, "=")) {
 			next();
-			if(id->type->base == INT || id->type->base == CHAR || id->type->base == PTR) {
+			if(id->type->tykind == INT || id->type->tykind == CHAR || id->type->tykind == PTR) {
 				*e++ = AL; *e++ = id->offset;
 				*e++ = PUSH; *e++ = AX;
 				type_check(id->type, expr("").type, "=");
 				*e++ = ASS;
-			} else if(id->type->base == ARR) {
+			} else if(id->type->tykind == ARR) {
 				arr_init_loc(id->type, id->offset);
 			}
 		}
@@ -132,7 +132,7 @@ void declare_loc(void) {
 void declare_glo(void) {
 	Type *type = specifier();
 	Id *id = decl_expr(type, GLO);
-	if(id->type->base == FUN) {
+	if(id->type->tykind == FUN) {
 		if(!strcmp(tks, "{")) {
 			varc = 0;
 			id->offset = e - emit;
@@ -157,16 +157,16 @@ void declare_glo(void) {
 		while(1) {
 			if(!strcmp(tks, "=")) {
 				next();
-				if(id->type->base == INT) data[id->offset] = expr_const("");
-				else if(id->type->base == CHAR) data[id->offset] = expr_const("");
-				else if(id->type->base == PTR) data[id->offset] = ptr_const(id->type);
-				else if(id->type->base == ARR) arr_init_glo(id->type, id->offset);
+				if(id->type->tykind == INT) data[id->offset] = expr_const("");
+				else if(id->type->tykind == CHAR) data[id->offset] = expr_const("");
+				else if(id->type->tykind == PTR) data[id->offset] = ptr_const(id->type);
+				else if(id->type->tykind == ARR) arr_init_glo(id->type, id->offset);
 				else error("line %d: error!\n", line);
 			} else {
-				if(id->type->base == INT) data[id->offset] = 0;
-				else if(id->type->base == CHAR) data[id->offset] = 0;
-				else if(id->type->base == PTR) data[id->offset] = 0;
-				else if(id->type->base == ARR) memset(data + id->offset, 0, id->type->count);
+				if(id->type->tykind == INT) data[id->offset] = 0;
+				else if(id->type->tykind == CHAR) data[id->offset] = 0;
+				else if(id->type->tykind == PTR) data[id->offset] = 0;
+				else if(id->type->tykind == ARR) memset(data + id->offset, 0, id->type->count);
 				else error("line %d: error!\n", line);
 			}
 			if(!strcmp(tks, ";")) break;
