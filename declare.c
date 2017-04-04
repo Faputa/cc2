@@ -9,7 +9,7 @@
 
 static int varc, *cpx;
 
-void decl_init(void) {
+void declare_init(void) {
 	cpx = (int*)malloc(MAXSIZE * sizeof(int));
 }
 

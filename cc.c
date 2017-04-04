@@ -66,13 +66,13 @@ int main(int argc, char *argv[]) {
 	fclose(fp);
 	
 	//init
-	decl_init();
+	vm_init();
+	api_init();
 	type_init();
 	token_init();
 	ident_init();
-	api_init();
+	declare_init();
 	parsegen_init();
-	vm_init();
 	
 	//reg api
 	api_register(printint, "void printint(int i);");
