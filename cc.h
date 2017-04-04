@@ -17,7 +17,7 @@ typedef struct {
 	int offset;
 	char *name;
 	Type *type;
-} Id;
+} Sym;
 
 typedef struct {
 	Type *type;
@@ -40,17 +40,17 @@ enum {
 	IP = 0, BP, SP, AX
 };
 
-extern Id *gid, *lid;
+extern Sym *gsym, *lsym;
 extern char *tks, *p;
 extern int tki, line, *e, *emit, *data;
 extern Type *typeint, *typechar, *typenull;
 
-//ident.c
-void ident_init(void);
-void print_ids(void);
-Id* sgetstr(char *tks);
-void setid(Type *type, Id *id);
-Id* getid(char *tks);
+//symbol.c
+void symbol_init(void);
+void print_sym(void);
+Sym* sgetstr(char *tks);
+void setid(Type *type, Sym *id);
+Sym* getid(char *tks);
 void inblock(void);
 void outblock(void);
 void infunc(void);
@@ -61,7 +61,7 @@ void type_init(void);
 int type_size(Type *type);
 void type_check(Type *type1, Type *type2, char *opr);
 Type* type_derive(int tykind, Type *base, int count);
-void print_type(Id *this_id);
+void print_type(Sym *this_id);
 
 //declare.c
 void declare_init(void);

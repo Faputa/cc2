@@ -41,7 +41,7 @@ void arr_init_glo(Type *type, int offset) {
 		}
 		if(type->count < count) error("line %d: error!\n", line);
 	} else if(tki == STR) {
-		Id *strid = sgetstr(tks);
+		Sym *strid = sgetstr(tks);
 		if(type->base->tykind != CHAR) error("line %d: error!\n", line);
 		if(type->count < strid->type->count) error("line %d: error!\n", line);
 		for(int i = 0; i < strid->type->count; i++) {
@@ -77,7 +77,7 @@ void arr_init_loc(Type *type, int offset) {
 		}
 		if(type->count < count) error("line %d: error!\n", line);
 	} else if(tki == STR) {
-		Id *strid = sgetstr(tks);
+		Sym *strid = sgetstr(tks);
 		if(type->base->tykind != CHAR) error("line %d: error!\n", line);
 		if(type->count < strid->type->count) error("line %d: error!\n", line);
 		for(int i = 0; i < strid->type->count; i++) {
@@ -168,13 +168,13 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		*e++ = SET; *e++ = AX; *e++ = 0;
 		next();
 	} else if(tki == STR) {
-		Id *this_id = sgetstr(tks);
+		Sym *this_id = sgetstr(tks);
 		*e++ = AG; *e++ = this_id->offset;
 		er.type = this_id->type;
 		er.is_lvalue = 1;
 		next();
 	} else if(tki == ID) {
-		Id *this_id = getid(tks);
+		Sym *this_id = getid(tks);
 		er.type = this_id->type;
 		*e++ = this_id->idkind == GLO? AG: AL; *e++ = this_id->offset;
 		if(er.type->tykind == INT || er.type->tykind == CHAR || er.type->tykind == PTR) {

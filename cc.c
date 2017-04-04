@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
 	api_init();
 	type_init();
 	token_init();
-	ident_init();
+	symbol_init();
 	declare_init();
 	parsegen_init();
 	
