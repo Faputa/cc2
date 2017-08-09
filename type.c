@@ -1,4 +1,4 @@
-//ÀàĞÍ±í¡¢²ÎÊıÀàĞÍ±í
+//ç±»å‹è¡¨ã€å‚æ•°ç±»å‹è¡¨
 
 #include "cc.h"
 #include <stdio.h>
@@ -39,7 +39,7 @@ static Type** getargtyls(int count) {
 	return _argtyls;
 }
 
-Type* type_derive(int tykind, Type *base, int count) { //ÀàĞÍÉú³É
+Type* type_derive(int tykind, Type *base, int count) { //ç±»å‹ç”Ÿæˆ
 	if(base == NULL) {
 		if(tykind == INT || tykind == CHAR || tykind == VOID || tykind == NUL) {
 			for(Type *i = tys; i < ty; i++) {
@@ -91,42 +91,42 @@ Type* type_derive(int tykind, Type *base, int count) { //ÀàĞÍÉú³É
 
 static void _print_type(Type *type) {
 	if(type->tykind == PTR) {
-		printf("Ö¸Ïò");
+		printf("æŒ‡å‘");
 		_print_type(type->base);
-		printf("µÄÖ¸Õë");
+		printf("çš„æŒ‡é’ˆ");
 	} else if(type->tykind == ARR) {
-		printf("ÓµÓĞ%d¸öÀàĞÍÎª", type->count);
+		printf("æ‹¥æœ‰%dä¸ªç±»å‹ä¸º", type->count);
 		_print_type(type->base);
-		printf("µÄÔªËØµÄÊı×é");
+		printf("çš„å…ƒç´ çš„æ•°ç»„");
 	} else if(type->tykind == FUN) {
 		for(int i = 0; i < type->count; i++) {
-			printf("µÚ%d¸ö²ÎÊıÎª", i + 1);
+			printf("ç¬¬%dä¸ªå‚æ•°ä¸º", i + 1);
 			_print_type(type->argtyls[i]);
-			printf("¡¢");
+			printf("ã€");
 		}
-		printf("·µ»ØÖµÎª");
+		printf("è¿”å›å€¼ä¸º");
 		_print_type(type->base);
-		printf("µÄº¯Êı");
+		printf("çš„å‡½æ•°");
 	} else if(type->tykind == API) {
 		for(int i = 0; i < type->count; i++) {
-			printf("µÚ%d¸ö²ÎÊıÎª", i + 1);
+			printf("ç¬¬%dä¸ªå‚æ•°ä¸º", i + 1);
 			_print_type(type->argtyls[i]);
-			printf("¡¢");
+			printf("ã€");
 		}
-		printf("·µ»ØÖµÎª");
+		printf("è¿”å›å€¼ä¸º");
 		_print_type(type->base);
-		printf("µÄAPI");
+		printf("çš„API");
 	} else if(type->tykind == INT) {
-		printf("ÕûĞÍ");
+		printf("æ•´å‹");
 	} else if(type->tykind == CHAR) {
-		printf("×Ö·ûĞÍ");
+		printf("å­—ç¬¦å‹");
 	} else if(type->tykind == VOID) {
-		printf("¿Õ");
+		printf("ç©º");
 	}
 }
 
 void print_type(Sym *id) {
-	printf("%sÎª", id->name);
+	printf("%sä¸º", id->name);
 	_print_type(id->type);
 	//printf("\n");
 }
@@ -142,52 +142,55 @@ int type_size(Type *type) {
 void type_check(Type *type1, Type *type2, char *opr) {
 	if(!strcmp(opr, "=")) {
 		if(type1->tykind == INT || type1->tykind == CHAR) {
-			if(type2->tykind == INT);
-			else if(type2->tykind == CHAR);
+			if(type2->tykind == INT) {}
+			else if(type2->tykind == CHAR) {}
 			else error("line %d: error!\n", line);
 		} else if(type1->tykind == PTR) {
-			if(type1 == type2);
-			else if(type2->tykind == NUL);
-			else if(type2->tykind == FUN && type2 == type1->base);
-			else if(type2->tykind == ARR && type2->base == type1->base);
-			else if(type2->tykind == PTR && type2->base->tykind == VOID);
+			if(type1 == type2) {}
+			else if(type2->tykind == NUL) {}
+			else if(type2->tykind == FUN && type2 == type1->base) {}
+			else if(type2->tykind == ARR && type2->base == type1->base) {}
+			else if(type2->tykind == PTR && type2->base->tykind == VOID) {}
 			else error("line %d: error!\n", line);
 		}
 	} else if(!strcmp(opr, "+") || !strcmp(opr, "-") || !strcmp(opr, "[")) {
-		if(type2->tykind == PTR || type2->tykind == ARR) {
-			Type *tmp = type1; type1 = type2; type2 = tmp;
-		}
 		if(type1->tykind == INT || type1->tykind == CHAR) {
-			if(!strcmp(opr, "[")) error("line %d: error!\n", line);
-		}
-		else if(type1->tykind == PTR || type1->tykind == ARR);
-		else error("line %d: error!\n", line);
-		if(type2->tykind == INT || type2->tykind == CHAR);
-		else error("line %d: error!\n", line);
+			if(type2->tykind == INT || type2->tykind == CHAR) {
+				if(!strcmp(opr, "[")) error("line %d: error!\n", line);
+			}
+			else if(type2->tykind == PTR || type2->tykind == ARR) {}
+			else error("line %d: error!\n", line);
+		} else if(type1->tykind == PTR || type1->tykind == ARR) {
+			if(type2->tykind == PTR || type2->tykind == ARR) {
+				if(type1->base != type2->base || strcmp(opr, "-")) error("line %d: error!\n", line);
+			}
+			else if(type2->tykind == INT || type2->tykind == CHAR) {}
+			else error("line %d: error!\n", line);
+		} else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "*") || !strcmp(opr, "/") || !strcmp(opr, "%")) {
 		if(type1->tykind == INT || type1->tykind == CHAR) {
-			if(type2->tykind == INT);
-			else if(type2->tykind == CHAR);
+			if(type2->tykind == INT) {}
+			else if(type2->tykind == CHAR) {}
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "==") || !strcmp(opr, ">") || !strcmp(opr, "<") || !strcmp(opr, "!=") || !strcmp(opr, ">=") || !strcmp(opr, "<=")) {
 		if(type1->tykind == INT || type1->tykind == CHAR) {
-			if(type2->tykind == INT);
-			else if(type2->tykind == CHAR);
+			if(type2->tykind == INT) {}
+			else if(type2->tykind == CHAR) {}
 			else error("line %d: error!\n", line);
 		} else if(type1->tykind == PTR) {
-			if(type1 == type2);
-			else if(type2->tykind == NUL);
+			if(type1 == type2) {}
+			else if(type2->tykind == NUL) {}
 			else error("line %d: error!\n", line);
 		} else if(type1->tykind == NUL) {
-			if(type1 == type2);
-			else if(type2->tykind == PTR);
+			if(type1 == type2) {}
+			else if(type2->tykind == PTR) {}
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "&&") || !strcmp(opr, "||")) {
 		if(type1->tykind == INT || type1->tykind == CHAR) {
-			if(type2->tykind == INT);
-			else if(type2->tykind == CHAR);
+			if(type2->tykind == INT) {}
+			else if(type2->tykind == CHAR) {}
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
 	} else error("line %d: error!\n", line);
