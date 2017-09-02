@@ -25,11 +25,11 @@ static Type* specifier(void) {
 
 static int lev(char *opr) {
 	char *oprs[] = {
-		")", "]",
+		//")", "]",
 		"", "*",
 		"", "(", "["
 	};
-	int lev = 1;
+	int lev = 0;
 	for(int i = 0; i < sizeof(oprs) / sizeof(*oprs); i++) {
 		if(!strcmp(oprs[i], opr)) return lev;
 		else if(!strcmp(oprs[i], "")) lev++;
@@ -47,7 +47,7 @@ static void complex(char *last_opr, Sym *id) { //¸´ÔÓÀàÐÍ·ÖÎö
 		*cpx++ = PTR;
 	} else if(!strcmp(tks, "(")) { //À¨ºÅ
 		next();
-		complex(")", id);
+		complex("", id);
 		if(strcmp(tks, ")")) error("line %d: error!\n", line);
 		next();
 	} else if(tki == ID) {
