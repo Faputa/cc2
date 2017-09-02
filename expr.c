@@ -93,7 +93,7 @@ void arr_init_loc(Type *type, int offset) {
 
 static int lev(char *opr) { //优先级越高lev越大，其他符号lev为0
 	char *oprs[] = {
-		")", "]",
+		//")", "]",
 		"", "&&", "||", "!",
 		"", "==", "!=",
 		"", ">", "<", ">=", "<=",
@@ -103,7 +103,7 @@ static int lev(char *opr) { //优先级越高lev越大，其他符号lev为0
 		"", "*_", "&_",
 		"", "(", "["
 	};
-	int lev = 1;
+	int lev = 0;
 	for(int i = 0; i < sizeof(oprs) / sizeof(*oprs); i++) {
 		if(!strcmp(oprs[i], opr)) return lev;
 		else if(!strcmp(oprs[i], "")) lev++;
@@ -185,7 +185,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		next();
 	} else if(!strcmp(tks, "(")) {
 		next();
-		er.type = expr(")").type;
+		er.type = expr("").type;
 		if(!strcmp(tks, ")")) next(); else error("line %d: error!\n", line);
 	} else if(!strcmp(tks, "*")) {
 		next();
@@ -235,7 +235,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				int *_e1 = e;
 				while(1) {
 					int *_e2 = e;
-					Type *type = expr(")").type;
+					Type *type = expr("").type;
 					if(argc < er.type->count) type_check((er.type->argtyls)[argc], type, "="); //参数类型检查
 					*e++ = PUSH; *e++ = AX;
 					int *_e3 = e;
@@ -257,7 +257,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 /*		} else if(!strcmp(tks, "[")) {
 			next();
 			int *_e3 = e;
-			Type *type = expr("]").type;
+			Type *type = expr("").type;
 			if(!strcmp(tks, "]")) next(); else error("line %d: error!\n", line);
 			type_check(er.type, type, "[");
 			int *_e4 = e;
@@ -307,7 +307,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			int *_e3 = e;
 			Type *type;
 			if(!strcmp(opr, "[")) {
-				type = expr("]").type;
+				type = expr("").type;
 				if(!strcmp(tks, "]")) next(); else error("line %d: error!\n", line);
 			} else {
 				type = expr(opr).type;

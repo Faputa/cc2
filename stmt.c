@@ -17,7 +17,7 @@ void stmt(void) {
 		outblock();
 	} else if(tki == If) {
 		next(); if(strcmp(tks, "(")) error("line %d: error!\n", line);
-		next(); expr(")");
+		next(); expr("");
 		if(strcmp(tks, ")")) error("line %d: error!\n", line);
 		next();
 		*e++ = JZ; int *_e1 = e++;
@@ -41,7 +41,7 @@ void stmt(void) {
 		if(tki == While) next(); else error("line %d: error!\n", line);
 		if(strcmp(tks, "(")) error("line %d: error!\n", line);
 		next();
-		expr(")");
+		expr("");
 		if(strcmp(tks, ")")) error("line %d: error!\n", line);
 		next();
 		if(strcmp(tks, ";")) error("line %d: error!\n", line);
@@ -71,7 +71,7 @@ void stmt(void) {
 		next();
 		int *_e2 = e;
 		if(strcmp(tks, ")")) {
-			expr(")");
+			expr("");
 			if(strcmp(tks, ")")) error("line %d: error!\n", line);
 			*e++ = JMP; *e++ = _e1 - emit;
 		}
@@ -84,7 +84,7 @@ void stmt(void) {
 	} else if(tki == While) {
 		int *_e1 = e;
 		next(); if(strcmp(tks, "(")) error("line %d: error!\n", line);
-		next(); expr(")");
+		next(); expr("");
 		if(strcmp(tks, ")")) error("line %d: error!\n", line);
 		next();
 		*e++ = JZ; int *_e2 = e++;
