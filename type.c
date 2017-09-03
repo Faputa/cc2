@@ -157,9 +157,9 @@ void type_check(Type *type1, Type *type2, char *opr) {
 		if(type1->tykind == INT || type1->tykind == CHAR) {
 			if(type2->tykind == INT || type2->tykind == CHAR) {
 				if(!strcmp(opr, "[")) error("line %d: error!\n", line);
-			}
-			else if(type2->tykind == PTR || type2->tykind == ARR) {}
-			else error("line %d: error!\n", line);
+			} else if(type2->tykind == PTR || type2->tykind == ARR) {
+				if(!strcmp(opr, "-")) error("line %d: error!\n", line);
+			} else error("line %d: error!\n", line);
 		} else if(type1->tykind == PTR || type1->tykind == ARR) {
 			if(type2->tykind == PTR || type2->tykind == ARR) {
 				if(type1->base != type2->base || strcmp(opr, "-")) error("line %d: error!\n", line);
