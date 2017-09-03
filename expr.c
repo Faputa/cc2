@@ -154,7 +154,6 @@ int expr_const(char *last_opr) {
 
 Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 	Er er = {NULL, 0, 1};
-	int *_e1 = e;
 	if(tki == INT) {
 		er.type = typeint;
 		*e++ = SET; *e++ = AX; *e++ = atoi(tks);
@@ -219,7 +218,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 	} else error("line %d: error!\n", line);
 	
 	while(lev(tks) > lev(last_opr)) {
-		int *_e2 = e;
+		int *_e1 = e;
 		*e++ = PUSH; *e++ = AX;
 		if(!strcmp(tks, "=")) {
 			next();
@@ -241,8 +240,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 					int *_e3 = e;
 					if(_e2 > _e1) {
 						memcpy(_e3, _e1, (_e2 - _e1) * sizeof(int));
-						memmove(_e1, _e2, (_e3 - _e2) * sizeof(int));
-						memcpy(_e1 + (_e3 - _e2), _e3, (_e2 - _e1) *sizeof(int));
+						memmove(_e1, _e2, (_e3 - _e1) * sizeof(int));
 					}
 					argc++;
 					if(!strcmp(tks, ")")) break;
@@ -257,7 +255,6 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 		} else if(!strcmp(tks, "+") || !strcmp(tks, "-") || !strcmp(tks, "[")) {
 			char *opr = tks;
 			next();
-			int *_e3 = e;
 			Type *type;
 			if(!strcmp(opr, "[")) {
 				type = expr("").type;
@@ -278,16 +275,17 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				er.type = typeint;
 			} else {
 				if(f1) {
-					int *_e4 = e;
-					memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
-					memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
-					memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
-					memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
 					er.type = type;
 				}
+				int *_e2 = e;
 				*e++ = PUSH; *e++ = AX;
 				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->base);
 				*e++ = MUL;
+				int *_e3 = e;
+				if(f1) {
+					memcpy(_e3, _e1, (_e2 - _e1) * sizeof(int));
+					memmove(_e1, _e2, (_e3 - _e1) * sizeof(int));
+				}
 				*e++ = !strcmp(opr, "-")? SUB: ADD;
 				if(!strcmp(opr, "[")) {
 					er.type = er.type->base;
