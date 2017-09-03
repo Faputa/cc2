@@ -120,7 +120,7 @@ int expr_const(char *last_opr) {
 		a = tks[0];
 	} else if(!strcmp(tks, "(")) {
 		next();
-		a = expr_const(")");
+		a = expr_const("");
 		if(!strcmp(tks, ")")) next(); else error("line %d: error!\n", line);
 	} else if(!strcmp(tks, "!")) {
 		next();
