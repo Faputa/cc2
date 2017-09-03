@@ -322,9 +322,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				er.type = type;
 			}
 			if(er.type->tykind == INT || er.type->tykind == CHAR) {
-				if(!strcmp(opr, "+")) *e++ = ADD;
-				else if(!strcmp(opr, "-")) *e++ = SUB;
-				else error("line %d: error!\n", line);
+				*e++ = !strcmp(opr, "-")? SUB: ADD;
 			} else if(er.type->tykind == PTR || er.type->tykind == ARR) {
 				*e++ = PUSH; *e++ = AX;
 				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->base);
