@@ -254,53 +254,6 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			*e++ = (er.type->tykind == FUN)? CALL: CAPI; *e++ = argc;
 			*e++ = DEC; *e++ = SP; *e++ = argc + 1;
 			er.type = er.type->base;
-/*		} else if(!strcmp(tks, "[")) {
-			next();
-			int *_e3 = e;
-			Type *type = expr("").type;
-			if(!strcmp(tks, "]")) next(); else error("line %d: error!\n", line);
-			type_check(er.type, type, "[");
-			int *_e4 = e;
-			if(type->tykind == PTR || type->tykind == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
-				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
-				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
-				memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
-				memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
-				er.type = type;
-			}
-			*e++ = PUSH; *e++ = AX;
-			*e++ = SET; *e++ = AX; *e++ = type_size(er.type-base);
-			*e++ = MUL;
-			*e++ = ADD;
-			er.type = er.type->base;
-			if(er.type->tykind == INT || er.type->tykind == CHAR || er.type->tykind == PTR) {
-				*e++ = VAL;
-				er.is_const = 0;
-			}
-			er.is_lvalue = 1;
-		} else if(!strcmp(tks, "+") || !strcmp(tks, "-")) {
-			char *opr = tks;
-			next();
-			int *_e3 = e;
-			Type *type = expr(opr).type;
-			type_check(er.type, type, opr);
-			int *_e4 = e;
-			if(type->tykind == PTR || type->tykind == ARR) {//printf("-- %d,%d,%d,%d, --\n",_e1-emit,_e2-emit,_e3-emit,_e4-emit);
-				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
-				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
-				memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
-				memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
-				er.type = type;
-			}
-			if(er.type->tykind == INT || er.type->tykind == CHAR) {
-				*e++ = !strcmp(opr, "+")? ADD: SUB;
-			} else if(er.type->tykind == PTR || er.type->tykind == ARR) {
-				*e++ = PUSH; *e++ = AX;
-				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->base);
-				*e++ = MUL;
-				*e++ = !strcmp(opr, "+")? ADD: SUB;
-				if(er.type->tykind == ARR) er.type = type_derive(PTR, er.type->base, 0);
-			} else error("line %d: error!\n", line);*/
 		} else if(!strcmp(tks, "+") || !strcmp(tks, "-") || !strcmp(tks, "[")) {
 			char *opr = tks;
 			next();
@@ -313,17 +266,25 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				type = expr(opr).type;
 			}
 			type_check(er.type, type, opr);
-			int *_e4 = e;
-			if(type->tykind == PTR || type->tykind == ARR) {
-				memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
-				memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
-				memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
-				memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
-				er.type = type;
-			}
-			if(er.type->tykind == INT || er.type->tykind == CHAR) {
+			int f1 = er.type->tykind == INT || er.type->tykind == CHAR;
+			int f2 = type->tykind == INT || type->tykind == CHAR;
+			if(f1 && f2) {
 				*e++ = !strcmp(opr, "-")? SUB: ADD;
-			} else if(er.type->tykind == PTR || er.type->tykind == ARR) {
+			} else if(!f1 && !f2) {
+				*e++ = SUB;
+				*e++ = PUSH; *e++ = AX;
+				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->base);
+				*e++ = DIV;
+				er.type = typeint;
+			} else {
+				if(f1) {
+					int *_e4 = e;
+					memcpy(_e4, _e1, (_e3 - _e1) * sizeof(int));
+					memmove(_e1, _e3, (_e4 - _e3) * sizeof(int));
+					memcpy(_e1 + (_e4 - _e3), _e4 + (_e2 - _e1), (_e3 - _e2) * sizeof(int));
+					memcpy(_e1 + (_e4 - _e2), _e4, (_e2 - _e1) * sizeof(int));
+					er.type = type;
+				}
 				*e++ = PUSH; *e++ = AX;
 				*e++ = SET; *e++ = AX; *e++ = type_size(er.type->base);
 				*e++ = MUL;
@@ -336,7 +297,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 					}
 					er.is_lvalue = 1;
 				} else if(er.type->tykind == ARR) er.type = type_derive(PTR, er.type->base, 0);
-			} else error("line %d: error!\n", line);
+			}
 		} else {
 			char *opr = tks;
 			next();
