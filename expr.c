@@ -294,7 +294,9 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 						er.is_const = 0;
 					}
 					er.is_lvalue = 1;
-				} else if(er.type->tykind == ARR) er.type = type_derive(PTR, er.type->base, 0);
+				} else {
+					if(er.type->tykind == ARR) er.type = type_derive(PTR, er.type->base, 0);
+				}
 			}
 		} else {
 			char *opr = tks;
