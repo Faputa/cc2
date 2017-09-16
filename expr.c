@@ -1,4 +1,4 @@
-//±í´ïÊ½·ÖÎö
+//è¡¨è¾¾å¼åˆ†æ
 
 #include "cc.h"
 #include <stdio.h>
@@ -91,7 +91,7 @@ void arr_init_loc(Type *type, int offset) {
 	next();
 }
 
-static int lev(char *opr) { //ÓÅÏÈ¼¶Ô½¸ßlevÔ½´ó£¬ÆäËû·ûºÅlevÎª0
+static int lev(char *opr) { //ä¼˜å…ˆçº§è¶Šé«˜levè¶Šå¤§ï¼Œå…¶ä»–ç¬¦å·levä¸º0
 	char *oprs[] = {
 		//")", "]",
 		"", "&&", "||", "!",
@@ -108,7 +108,7 @@ static int lev(char *opr) { //ÓÅÏÈ¼¶Ô½¸ßlevÔ½´ó£¬ÆäËû·ûºÅlevÎª0
 		if(!strcmp(oprs[i], opr)) return lev;
 		else if(!strcmp(oprs[i], "")) lev++;
 	}
-	return 0; //ÆäËû·ûºÅ
+	return 0; //å…¶ä»–ç¬¦å·
 }
 
 int expr_const(char *last_opr) {
@@ -227,7 +227,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			if(!er.is_const) *e++ = ASS; else error("line %d: error!\n", line);
 		} else if(!strcmp(tks, "(")) {
 			next();
-			if(er.type->tykind == PTR) er.type = er.type->base; //½«º¯ÊıÖ¸Õë×ª»¯Îªº¯Êı
+			if(er.type->tykind == PTR) er.type = er.type->base; //å°†å‡½æ•°æŒ‡é’ˆè½¬åŒ–ä¸ºå‡½æ•°
 			if(er.type->tykind != FUN && er.type->tykind != API) error("line %d: error!\n", line);
 			int argc = 0;
 			if(strcmp(tks, ")")) {
@@ -235,7 +235,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 				while(1) {
 					int *_e2 = e;
 					Type *type = expr("").type;
-					if(argc < er.type->count) type_check((er.type->argtyls)[argc], type, "="); //²ÎÊıÀàĞÍ¼ì²é
+					if(argc < er.type->count) type_check((er.type->argtyls)[argc], type, "="); //å‚æ•°ç±»å‹æ£€æŸ¥
 					*e++ = PUSH; *e++ = AX;
 					int *_e3 = e;
 					if(_e2 > _e1) {
@@ -314,7 +314,7 @@ Er expr(char *last_opr) { //1 + 2 ^ 3 * 4 == (1 + (2 ^ (3) * (4)))
 			else if(!strcmp(opr, "<=")) { *e++ = GT; *e++ = NOT; }
 			else if(!strcmp(opr, "&&")) *e++ = AND;
 			else if(!strcmp(opr, "||")) *e++ = OR;
-			else error("line %d: error!\n", line);
+			//else error("line %d: error!\n", line);
 		}
 	}
 	return er;
