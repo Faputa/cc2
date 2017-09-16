@@ -183,7 +183,7 @@ void type_check(Type *type1, Type *type2, char *opr) {
 			else if(type2->tykind == NUL) {}
 			else error("line %d: error!\n", line);
 		} else if(type1->tykind == NUL) {
-			if(type1 == type2) {}
+			if(type2->tykind == NUL) {}
 			else if(type2->tykind == PTR) {}
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
