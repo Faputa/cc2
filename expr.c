@@ -147,7 +147,7 @@ int expr_const(char *last_opr) {
 		else if(!strcmp(opr, "!=")) a = a != b;
 		else if(!strcmp(opr, "&&")) a = a && b;
 		else if(!strcmp(opr, "||")) a = a || b;
-		else error("line %d: error!\n", line);
+		//else error("line %d: error!\n", line);
 	}
 	return a;
 }
