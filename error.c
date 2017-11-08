@@ -6,7 +6,7 @@
 void error(char *fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	printf(fmt, *args);
+	vprintf(fmt, args);
 	va_end(args);
 	exit(0);
 }
@@ -14,6 +14,6 @@ void error(char *fmt, ...) {
 void warning(char *fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	printf(fmt, *args);
+	vprintf(fmt, args);
 	va_end(args);
 }
