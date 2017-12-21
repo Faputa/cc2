@@ -16,7 +16,7 @@ void api_init(void) {
 void api_register(Api fun, char *proto) {
 	p = proto;
 	next();
-	Sym *id = gsym;
+	Id *id = gid;
 	declare_glo();
 	if(id->type->tykind != FUN) error("line %d: error!\n", line);
 	id->type->tykind = API;

@@ -20,7 +20,7 @@ void type_init(void) {
 
 static Type** getargtyls(int count) {
 	if(count == 0) return NULL;
-	Sym *id = lsym - count;
+	Id *id = lid - count;
 	Type **_argtyls = argtylss;
 	int i = 0;
 	while(_argtyls < argtyls) {
@@ -125,7 +125,7 @@ static void _print_type(Type *type) {
 	}
 }
 
-void print_type(Sym *id) {
+void print_type(Id *id) {
 	printf("%s为", id->name);
 	_print_type(id->type);
 	//printf("\n");

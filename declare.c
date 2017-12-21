@@ -37,8 +37,8 @@ static int lev(char *opr) {
 	return 0; //其他符号
 }
 
-static Sym* decl_expr(Type *type, int scope);
-static void complex(char *last_opr, Sym *id) { //复杂类型分析
+static Id* decl_expr(Type *type, int scope);
+static void complex(char *last_opr, Id *id) { //复杂类型分析
 	//前置符号
 	if(!strcmp(tks, "*")) { //指针
 		next();
@@ -87,8 +87,8 @@ static void complex(char *last_opr, Sym *id) { //复杂类型分析
 	}
 }
 
-static Sym* decl_expr(Type *type, int scope) {
-	Sym *id = (scope == GLO)? gsym: lsym;
+static Id* decl_expr(Type *type, int scope) {
+	Id *id = (scope == GLO)? gid: lid;
 	id->idkind = scope;
 	int *_cpx = cpx;
 	complex("", id); //生成复杂类型栈
@@ -110,7 +110,7 @@ void declare_loc(void) {
 	Type *type = specifier();
 	while(1) {
 		//varc++;
-		Sym *id = decl_expr(type, LOC);
+		Id *id = decl_expr(type, LOC);
 		if(!strcmp(tks, "=")) {
 			next();
 			if(id->type->tykind == INT || id->type->tykind == CHAR || id->type->tykind == PTR) {
@@ -131,7 +131,7 @@ void declare_loc(void) {
 
 void declare_glo(void) {
 	Type *type = specifier();
-	Sym *id = decl_expr(type, GLO);
+	Id *id = decl_expr(type, GLO);
 	if(id->type->tykind == FUN) {
 		if(!strcmp(tks, "{")) {
 			varc = 0;
