@@ -11,90 +11,38 @@ void vm_init(void) {
 }
 
 static int* print_emit(int *i) {
-	#define PRINT_REG(x) { \
-		if(x == IP) printf("IP "); \
-		else if(x == BP) printf("BP "); \
-		else if(x == SP) printf("SP "); \
-		else if(x == AX) printf("AX "); \
-	}
+	#define GET_REG(x) (x == IP ? "IP" : x == BP ? "BP" : x == SP ? "SP" : x == AX ? "AX" : "[x]")
 	switch(*i) {
-	case PUSH:
-		printf("PUSH ");
-		if(*++i >= IP && *i <= AX) PRINT_REG(*i)
-		else printf("[%d]", *i);
-		break;
-	case POP:
-		printf("POP  ");
-		if(*++i >= IP && *i <= AX) PRINT_REG(*i)
-		else printf("[%d]", *i);
-		break;
-	case SET:
-		printf("SET  ");
-		if(*++i >= IP && *i <= AX) PRINT_REG(*i)
-		else printf("[%d]", *i);
-		printf("%d", *++i);
-		break;
-	case INC:
-		printf("INC  ");
-		if(*++i >= IP && *i <= AX) PRINT_REG(*i)
-		else printf("[%d]", *i);
-		printf("%d", *++i);
-		break;
-	case DEC:
-		printf("DEC  ");
-		if(*++i >= IP && *i <= AX) PRINT_REG(*i)
-		else printf("[%d]", *i);
-		printf("%d", *++i);
-		break;
-	case JMP:
-		printf("JMP  ");
-		printf("[%d]", *++i);
-		break;
-	case JZ:
-		printf("JZ   ");
-		printf("[%d]", *++i);
-		break;
-	case MOV:
-		printf("MOV  ");
-		if(*++i >= IP && *i <= AX) PRINT_REG(*i)
-		else printf("[%d]", *i);
-		if(*++i >= IP && *i <= AX) PRINT_REG(*i)
-		else printf("[%d]", *i);
-		break;
-	case ADD: printf("ADD"); break;
-	case SUB: printf("SUB"); break;
-	case MUL: printf("MUL"); break;
-	case DIV: printf("DIV"); break;
-	case MOD: printf("MOD"); break;
-	case ASS: printf("ASS"); break;
-	case EQ: printf("EQ"); break;
-	case GT: printf("GT"); break;
-	case LT: printf("LT"); break;
-	case AND: printf("AND"); break;
-	case OR: printf("OR"); break;
-	case NOT: printf("NOT"); break;
-	case AG:
-		printf("AG   ");
-		printf("%d", *++i);
-		break;
-	case AL:
-		printf("AL   ");
-		printf("%d", *++i);
-		break;
-	case VAL: printf("VAL"); break;
-	case CALL:
-		printf("CALL ");
-		printf("%d", *++i);
-		break;
-	case CAPI:
-		printf("CAPI ");
-		printf("%d", *++i);
-		break;
-	case EXIT: printf("EXIT"); break;
-	default: printf("[%d]", i - emit);
+	case PUSH: i++; printf("PUSH %s\n", GET_REG(*i)); break;
+	case POP: i++; printf("POP  %s\n", GET_REG(*i)); break;
+	case SET: i++; printf("SET  %s ", GET_REG(*i)); printf("%d\n", *++i); break;
+	case INC: i++; printf("INC  %s ", GET_REG(*i)); printf("%d\n", *++i); break;
+	case DEC: i++; printf("DEC  %s ", GET_REG(*i)); printf("%d\n", *++i); break;
+	case JMP: printf("JMP  [%d]\n", *++i); break;
+	case JZ: printf("JZ   [%d]\n", *++i); break;
+	case MOV: i++; printf("MOV  %s ", GET_REG(*i)); i++; printf("%s\n", GET_REG(*i)); break;
+	case ADD: printf("ADD\n"); break;
+	case SUB: printf("SUB\n"); break;
+	case MUL: printf("MUL\n"); break;
+	case DIV: printf("DIV\n"); break;
+	case MOD: printf("MOD\n"); break;
+	case ASS: printf("ASS\n"); break;
+	case EQ: printf("EQ\n"); break;
+	case GT: printf("GT\n"); break;
+	case LT: printf("LT\n"); break;
+	case AND: printf("AND\n"); break;
+	case OR: printf("OR\n"); break;
+	case NOT: printf("NOT\n"); break;
+	case AG: printf("AG   %d\n", *++i); break;
+	case AL: printf("AL   %d\n", *++i); break;
+	case VAL: printf("VAL\n"); break;
+	case CALL: printf("CALL %d\n", *++i); break;
+	case CAPI: printf("CAPI %d\n", *++i); break;
+	case EXIT: printf("EXIT\n"); break;
+	default: printf("[%d]\n", i - emit);
 	}
 	return i;
-	#undef PRINT_REG
+	#undef GET_REG
 }
 
 void vm_run(int src, int debug) {
@@ -103,7 +51,6 @@ void vm_run(int src, int debug) {
 		for(int *i = emit; i < e; i++) {
 			printf("%d\t", i - emit);
 			i = print_emit(i);
-			printf("\n");
 		}
 	}
 	//run..
