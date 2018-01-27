@@ -142,15 +142,14 @@ int type_size(Type *type) {
 void type_check(Type *type1, Type *type2, char *opr) {
 	if(!strcmp(opr, "=")) {
 		if(type1->tykind == INT || type1->tykind == CHAR) {
-			if(type2->tykind == INT) {}
-			else if(type2->tykind == CHAR) {}
+			if(type2->tykind == INT || type2->tykind == CHAR) {}
 			else error("line %d: error!\n", line);
 		} else if(type1->tykind == PTR) {
-			if(type1 == type2) {}
-			else if(type2->tykind == NUL) {}
-			else if(type2->tykind == FUN && type2 == type1->base) {}
-			else if(type2->tykind == ARR && type2->base == type1->base) {}
-			else if(type2->tykind == PTR && type2->base->tykind == VOID) {}
+			if(type1 == type2
+			|| type2->tykind == NUL
+			|| (type2->tykind == FUN && type2 == type1->base)
+			|| (type2->tykind == ARR && type2->base == type1->base)
+			|| (type2->tykind == PTR && type2->base->tykind == VOID)) {}
 			else error("line %d: error!\n", line);
 		}
 	} else if(!strcmp(opr, "+") || !strcmp(opr, "-") || !strcmp(opr, "[")) {
@@ -169,28 +168,23 @@ void type_check(Type *type1, Type *type2, char *opr) {
 		} else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "*") || !strcmp(opr, "/") || !strcmp(opr, "%")) {
 		if(type1->tykind == INT || type1->tykind == CHAR) {
-			if(type2->tykind == INT) {}
-			else if(type2->tykind == CHAR) {}
+			if(type2->tykind == INT || type2->tykind == CHAR) {}
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "==") || !strcmp(opr, ">") || !strcmp(opr, "<") || !strcmp(opr, "!=") || !strcmp(opr, ">=") || !strcmp(opr, "<=")) {
 		if(type1->tykind == INT || type1->tykind == CHAR) {
-			if(type2->tykind == INT) {}
-			else if(type2->tykind == CHAR) {}
+			if(type2->tykind == INT || type2->tykind == CHAR) {}
 			else error("line %d: error!\n", line);
 		} else if(type1->tykind == PTR) {
-			if(type1 == type2) {}
-			else if(type2->tykind == NUL) {}
+			if(type1 == type2 || type2->tykind == NUL) {}
 			else error("line %d: error!\n", line);
 		} else if(type1->tykind == NUL) {
-			if(type2->tykind == NUL) {}
-			else if(type2->tykind == PTR) {}
+			if(type2->tykind == NUL || type2->tykind == PTR) {}
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
 	} else if(!strcmp(opr, "&&") || !strcmp(opr, "||")) {
 		if(type1->tykind == INT || type1->tykind == CHAR) {
-			if(type2->tykind == INT) {}
-			else if(type2->tykind == CHAR) {}
+			if(type2->tykind == INT || type2->tykind == CHAR) {}
 			else error("line %d: error!\n", line);
 		} else error("line %d: error!\n", line);
 	} else error("line %d: error!\n", line);
