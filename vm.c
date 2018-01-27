@@ -12,21 +12,22 @@ void vm_init(void) {
 
 static int* print_emit(int *i) {
 	#define PRINT_REG(x) do { \
-		if(x == IP) printf("IP"); \
-		else if(x == BP) printf("BP"); \
-		else if(x == SP) printf("SP"); \
-		else if(x == AX) printf("AX"); \
-		else printf("[%d]", x); \
+		int y = (x); \
+		if(y == IP) printf("IP"); \
+		else if(y == BP) printf("BP"); \
+		else if(y == SP) printf("SP"); \
+		else if(y == AX) printf("AX"); \
+		else printf("[%d]", y); \
 	} while(0)
 	switch(*i) {
-	case PUSH: printf("PUSH "); i++; PRINT_REG(*i); break;
-	case POP: printf("POP  "); i++; PRINT_REG(*i); break;
-	case SET: printf("SET  "); i++; PRINT_REG(*i); printf(" %d", *++i); break;
-	case INC: printf("INC  "); i++; PRINT_REG(*i); printf(" %d", *++i); break;
-	case DEC: printf("DEC  "); i++; PRINT_REG(*i); printf(" %d", *++i); break;
+	case PUSH: printf("PUSH "); PRINT_REG(*++i); break;
+	case POP: printf("POP  "); PRINT_REG(*++i); break;
+	case SET: printf("SET  "); PRINT_REG(*++i); printf(" %d", *++i); break;
+	case INC: printf("INC  "); PRINT_REG(*++i); printf(" %d", *++i); break;
+	case DEC: printf("DEC  "); PRINT_REG(*++i); printf(" %d", *++i); break;
 	case JMP: printf("JMP  [%d]", *++i); break;
 	case JZ: printf("JZ   [%d]", *++i); break;
-	case MOV: printf("MOV  "); i++; PRINT_REG(*i); printf(" "); i++; PRINT_REG(*i); break;
+	case MOV: printf("MOV  "); PRINT_REG(*++i); printf(" "); PRINT_REG(*++i); break;
 	case ADD: printf("ADD"); break;
 	case SUB: printf("SUB"); break;
 	case MUL: printf("MUL"); break;
