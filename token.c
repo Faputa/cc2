@@ -18,7 +18,7 @@ static char *point[] = {
 	"==", ">=", "<=", "&&", "||", "+=", "-=", "*=", "/=",
 	"+", "-", "*", "/", "%", "=", ">", "<", "!", "^", "&", "|", "(", ")", "{", "}", "[", "]", "?", ":", ",", ";"
 };
-static char *trans[] = {
+static char *escape[] = {
 	"\\n", "\n",
 	"\\\\", "\\",
 	"\\t", "\t",
@@ -127,10 +127,10 @@ void next(void) {
 			tks = tksalloc(len + 1);
 			for(int i = 0; i < len; i++) {
 				if(*_p == '\\') {
-					for(int j = 0; j < sizeof(trans) / sizeof(*trans); j += 2) {
-						if(!strncmp(trans[j], _p, strlen(trans[j]))) {
-							tks[i] = *trans[j+1];
-							_p += strlen(trans[j]);
+					for(int j = 0; j < sizeof(escape) / sizeof(*escape); j += 2) {
+						if(!strncmp(escape[j], _p, strlen(escape[j]))) {
+							tks[i] = *escape[j+1];
+							_p += strlen(escape[j]);
 							break;
 						}
 					}
@@ -146,9 +146,9 @@ void next(void) {
 		} else if(*p == '\'') {
 			tki = CHAR;
 			if(*++p == '\\') {
-				for(int i = 0; i < sizeof(trans) / sizeof(*trans); i += 2) {
-					if(!strncmp(trans[i], p, strlen(trans[i]))) {
-						tks = trans[i + 1];
+				for(int i = 0; i < sizeof(escape) / sizeof(*escape); i += 2) {
+					if(!strncmp(escape[i], p, strlen(escape[i]))) {
+						tks = escape[i + 1];
 						break;
 					}
 				}
